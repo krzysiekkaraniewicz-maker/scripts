@@ -5,15 +5,9 @@ local CoreGui = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
 
--- ==========================================
--- KONFIGURACJA KEY SYSTEMU
--- ==========================================
 local CORRECT_KEY = "AuroraHub"
 local DISCORD_LINK = "https://discord.gg/BGk6XwEZY"
 
--- ==========================================
--- MOTYW I ANIMACJE
--- ==========================================
 local Theme = {
     Background = Color3.fromRGB(15, 15, 20),
     Panel = Color3.fromRGB(22, 22, 28),
@@ -28,21 +22,20 @@ local Theme = {
 
 local animFast = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 local animSpring = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+local animBounce = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
--- Czyszczenie starych GUI
 for _, gui in ipairs({CoreGui, player:WaitForChild("PlayerGui")}) do
     if gui:FindFirstChild("AuroraKeyGUI") then gui:FindFirstChild("AuroraKeyGUI"):Destroy() end
     if gui:FindFirstChild("AuroraRaceGUI") then gui:FindFirstChild("AuroraRaceGUI"):Destroy() end
 end
 
 -- ==========================================
--- TWORZENIE GUI KEY SYSTEMU
+-- KEY GUI
 -- ==========================================
 local keyGui = Instance.new("ScreenGui")
 keyGui.Name = "AuroraKeyGUI"
 keyGui.ResetOnSpawn = false
 keyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
 if not pcall(function() keyGui.Parent = CoreGui end) then
     keyGui.Parent = player.PlayerGui
 end
@@ -67,7 +60,6 @@ local mainScale = Instance.new("UIScale", keyFrame)
 mainScale.Scale = 0
 TweenService:Create(mainScale, animSpring, {Scale = 1}):Play()
 
--- Topbar & Przeciąganie
 local topBar = Instance.new("Frame", keyFrame)
 topBar.Size = UDim2.new(1, 0, 0, 40)
 topBar.BackgroundTransparency = 1
@@ -93,7 +85,6 @@ topBarLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 topBarLine.BackgroundTransparency = 0.9
 topBarLine.BorderSizePixel = 0
 
--- Przeciąganie okna
 local dragging, dragStart, startPos
 topBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -105,7 +96,6 @@ topBar.InputBegan:Connect(function(input)
         end)
     end
 end)
-
 UserInputService.InputChanged:Connect(function(input)
     if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
@@ -113,7 +103,6 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- Zawartość
 local content = Instance.new("Frame", keyFrame)
 content.Size = UDim2.new(1, -28, 1, -50)
 content.Position = UDim2.new(0, 14, 0, 45)
@@ -124,7 +113,6 @@ layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Padding = UDim.new(0, 10)
 layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
--- Input do wpisywania klucza
 local keyInputBox = Instance.new("TextBox", content)
 keyInputBox.Size = UDim2.new(1, 0, 0, 42)
 keyInputBox.BackgroundColor3 = Theme.Panel
@@ -144,7 +132,14 @@ local inputStroke = Instance.new("UIStroke", keyInputBox)
 inputStroke.Color = Color3.fromRGB(255, 255, 255)
 inputStroke.Transparency = 0.9
 
--- Funkcja animacji przycisków
+-- Focus glow na inpucie (subtelne)
+keyInputBox.Focused:Connect(function()
+    TweenService:Create(inputStroke, animFast, {Transparency = 0.5}):Play()
+end)
+keyInputBox.FocusLost:Connect(function()
+    TweenService:Create(inputStroke, animFast, {Transparency = 0.9}):Play()
+end)
+
 local function createButtonAnim(btn)
     local scale = Instance.new("UIScale", btn)
     btn.MouseEnter:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
@@ -153,7 +148,6 @@ local function createButtonAnim(btn)
     btn.MouseButton1Up:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
 end
 
--- Przycisk Submit Key
 local submitBtn = Instance.new("TextButton", content)
 submitBtn.Size = UDim2.new(1, 0, 0, 40)
 submitBtn.BackgroundColor3 = Theme.Accent1
@@ -175,7 +169,6 @@ submitGrad.Color = ColorSequence.new{
 
 createButtonAnim(submitBtn)
 
--- Przycisk Get Key (Kopiowanie Discorda)
 local getKeyBtn = Instance.new("TextButton", content)
 getKeyBtn.Size = UDim2.new(1, 0, 0, 36)
 getKeyBtn.BackgroundColor3 = Theme.Panel
@@ -195,7 +188,6 @@ getKeyStroke.Transparency = 0.9
 
 createButtonAnim(getKeyBtn)
 
--- Status Info Label
 local statusLabel = Instance.new("TextLabel", content)
 statusLabel.Size = UDim2.new(1, 0, 0, 20)
 statusLabel.BackgroundTransparency = 1
@@ -206,6 +198,21 @@ statusLabel.Text = "Join Discord to get the key"
 statusLabel.LayoutOrder = 4
 
 -- ==========================================
+-- ANIMACJA SHAKE (błędny klucz)
+-- ==========================================
+local function shakeFrame(frame)
+    local orig = frame.Position
+    local offsets = {10, -10, 7, -7, 4, -4, 0}
+    task.spawn(function()
+        for _, ox in ipairs(offsets) do
+            frame.Position = UDim2.new(orig.X.Scale, orig.X.Offset + ox, orig.Y.Scale, orig.Y.Offset)
+            task.wait(0.04)
+        end
+        frame.Position = orig
+    end)
+end
+
+-- ==========================================
 -- LOGIKA KEY SYSTEMU
 -- ==========================================
 getKeyBtn.MouseButton1Click:Connect(function()
@@ -214,7 +221,6 @@ getKeyBtn.MouseButton1Click:Connect(function()
     elseif toclipboard then
         toclipboard(DISCORD_LINK)
     end
-    
     statusLabel.TextColor3 = Theme.Accent2
     statusLabel.Text = "Copied Discord link to clipboard!"
     task.wait(2.5)
@@ -223,108 +229,34 @@ getKeyBtn.MouseButton1Click:Connect(function()
 end)
 
 local function loadMainScript()
-    -- Animacja zamknięcia Key Systemu
-    TweenService:Create(mainScale, animSpring, {Scale = 0}):Play()
-    task.wait(0.4)
+    TweenService:Create(mainScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
+    task.wait(0.35)
     keyGui:Destroy()
 
     -- ==========================================
-    -- GŁÓWNY KOD SKRYPTU AUTOFARM
+    -- AUTOFARM
     -- ==========================================
     local RunService = game:GetService("RunService")
     local racesFolder = workspace:WaitForChild("Races")
 
     local RACES = {
-        {
-            name = "Miami City Circuit",
-            folder = "Miami City Circuit",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                31, 32, 33, 34, 35, 36, 37, 38
-            },
-            specialAfter = {
-                [27] = {fromPrev = 26, extraDist = 420}
-            }
-        },
-        {
-            name = "Air Race",
-            folder = "Air Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
-        },
-        {
-            name = "Around The Map",
-            folder = "Around The Map",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                31, 32, 33, 34
-            },
-        },
-        {
-            name = "Beach Dash",
-            folder = "Beach Dash",
-            checkpoints = {1, 2, 3, 4, 5, 6},
-        },
-        {
-            name = "Circuit Moto Race",
-            folder = "Circuit Moto Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21},
-        },
-        {
-            name = "Circuit Race",
-            folder = "Circuit Race",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28
-            },
-        },
-        {
-            name = "Desert Race",
-            folder = "Desert Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-        },
-        {
-            name = "Drag Race",
-            folder = "Drag Race",
-            checkpoints = {1},
-        },
-        {
-            name = "Highway Race",
-            folder = "Highway Race",
-            checkpoints = {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30},
-        },
-        {
-            name = "Mountain Dash",
-            folder = "Mountain Dash",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-            },
-        },
-        {
-            name = "Offroad Race",
-            folder = "Offroad Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
-        },
-        {
-            name = "Tropical Dash",
-            folder = "Tropical Dash",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8},
-        },
+        { name = "Miami City Circuit",  folder = "Miami City Circuit",  checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38}, specialAfter = {[27]={fromPrev=26,extraDist=420}} },
+        { name = "Air Race",            folder = "Air Race",            checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20} },
+        { name = "Around The Map",      folder = "Around The Map",      checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34} },
+        { name = "Beach Dash",          folder = "Beach Dash",          checkpoints = {1,2,3,4,5,6} },
+        { name = "Circuit Moto Race",   folder = "Circuit Moto Race",   checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21} },
+        { name = "Circuit Race",        folder = "Circuit Race",        checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28} },
+        { name = "Desert Race",         folder = "Desert Race",         checkpoints = {1,2,3,4,5,6,7,8,9,10} },
+        { name = "Drag Race",           folder = "Drag Race",           checkpoints = {1} },
+        { name = "Highway Race",        folder = "Highway Race",        checkpoints = {11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30} },
+        { name = "Mountain Dash",       folder = "Mountain Dash",       checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32} },
+        { name = "Offroad Race",        folder = "Offroad Race",        checkpoints = {1,2,3,4,5,6,7,8,9,10,11} },
+        { name = "Tropical Dash",       folder = "Tropical Dash",       checkpoints = {1,2,3,4,5,6,7,8} },
     }
 
     local config = {
-        minSpeed = 10,
-        maxSpeed = 3000,
-        flySpeed = 50,
-        minLaps = 0,
-        maxLaps = 5,
-        targetLaps = 0,
+        minSpeed = 10, maxSpeed = 3000, flySpeed = 50,
+        minLaps = 0,   maxLaps = 5,    targetLaps = 0,
         heightOffset = 10,
         isToggled = false,
         isDelayEnabled = false,
@@ -337,7 +269,6 @@ local function loadMainScript()
     screenGui.Name = "AuroraRaceGUI"
     screenGui.ResetOnSpawn = false
     screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
     if not pcall(function() screenGui.Parent = CoreGui end) then
         screenGui.Parent = player.PlayerGui
     end
@@ -400,7 +331,6 @@ local function loadMainScript()
             end)
         end
     end)
-
     UserInputService.InputChanged:Connect(function(input)
         if dragging2 and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart2
@@ -489,7 +419,6 @@ local function loadMainScript()
         config.selectedRaceIndex = (config.selectedRaceIndex > 1) and (config.selectedRaceIndex - 1) or #RACES
         updateRaceDisplay()
     end)
-
     nextBtn.MouseButton1Click:Connect(function()
         if config.isToggled then return end
         config.selectedRaceIndex = (config.selectedRaceIndex < #RACES) and (config.selectedRaceIndex + 1) or 1
@@ -565,7 +494,6 @@ local function loadMainScript()
                 return update(input)
             end
         end)
-
         UserInputService.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 isDragging = false
@@ -580,12 +508,12 @@ local function loadMainScript()
     end
 
     local speedSlider = createSlider("FLY SPEED", config.minSpeed, config.maxSpeed, config.flySpeed, function(v) return tostring(v) end, 2)
-    local lapSlider = createSlider("LAPS TARGET", config.minLaps, config.maxLaps, config.targetLaps, function(v) return v == 0 and "INFINITE" or tostring(v) end, 3)
+    local lapSlider   = createSlider("LAPS TARGET", config.minLaps, config.maxLaps, config.targetLaps, function(v) return v == 0 and "INFINITE" or tostring(v) end, 3)
 
     UserInputService.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            if speedSlider.getDragging() then config.flySpeed = speedSlider.updateFunc(input) end
-            if lapSlider.getDragging() then config.targetLaps = lapSlider.updateFunc(input) end
+            if speedSlider.getDragging() then config.flySpeed   = speedSlider.updateFunc(input) end
+            if lapSlider.getDragging()   then config.targetLaps = lapSlider.updateFunc(input)   end
         end
     end)
 
@@ -656,7 +584,12 @@ local function loadMainScript()
     labelStroke.Thickness = 1.5
     labelStroke.Transparency = 0.5
 
-    createButtonAnim(startBtn)
+    -- Bounce scale na START przycisku
+    local startBtnScale = Instance.new("UIScale", startBtn)
+    startBtn.MouseEnter:Connect(function() TweenService:Create(startBtnScale, animFast, {Scale = 1.02}):Play() end)
+    startBtn.MouseLeave:Connect(function() TweenService:Create(startBtnScale, animFast, {Scale = 1}):Play() end)
+    startBtn.MouseButton1Down:Connect(function() TweenService:Create(startBtnScale, animFast, {Scale = 0.95}):Play() end)
+    startBtn.MouseButton1Up:Connect(function() TweenService:Create(startBtnScale, animFast, {Scale = 1.02}):Play() end)
 
     -- FOOTER
     local footer = Instance.new("TextLabel", contentFrame)
@@ -668,7 +601,9 @@ local function loadMainScript()
     footer.Text = "MADE BY L8LY4U | AURORA HUB"
     footer.LayoutOrder = 6
 
+    -- ==========================================
     -- LOGIKA JAZDY
+    -- ==========================================
     local function enableNoclip()
         if noclipConnection then noclipConnection:Disconnect() end
         noclipConnection = RunService.Stepped:Connect(function()
@@ -682,21 +617,18 @@ local function loadMainScript()
     end
 
     local function disableNoclip()
-        if noclipConnection then
-            noclipConnection:Disconnect()
-            noclipConnection = nil
-        end
+        if noclipConnection then noclipConnection:Disconnect(); noclipConnection = nil end
     end
 
     local function stopDriving()
         disableNoclip()
-        if flyMover then flyMover:Destroy() flyMover = nil end
-        if flyGyro then flyGyro:Destroy() flyGyro = nil end
+        if flyMover then flyMover:Destroy(); flyMover = nil end
+        if flyGyro  then flyGyro:Destroy();  flyGyro  = nil end
         local character = player.Character
         local hrp = character and character:FindFirstChild("HumanoidRootPart")
         if hrp then
             local rp = hrp.AssemblyRootPart or hrp
-            rp.AssemblyLinearVelocity = Vector3.zero
+            rp.AssemblyLinearVelocity  = Vector3.zero
             rp.AssemblyAngularVelocity = Vector3.zero
         end
     end
@@ -722,7 +654,7 @@ local function loadMainScript()
 
                     local character = player.Character
                     local hrp = character and character:FindFirstChild("HumanoidRootPart")
-                    if not hrp then config.isToggled = false break end
+                    if not hrp then config.isToggled = false; break end
 
                     local rootPart = hrp.AssemblyRootPart or hrp
 
@@ -751,38 +683,38 @@ local function loadMainScript()
                             local reached = false
                             while not reached and config.isToggled do
                                 RunService.Heartbeat:Wait()
-                                if not rootPart or not rootPart.Parent then config.isToggled = false break end
+                                if not rootPart or not rootPart.Parent then config.isToggled = false; break end
 
                                 local currentPos = rootPart.Position
-                                local targetPos = checkpoint.Position + Vector3.new(0, config.heightOffset, 0)
-                                local distance = (targetPos - currentPos).Magnitude
+                                local targetPos  = checkpoint.Position + Vector3.new(0, config.heightOffset, 0)
+                                local distance   = (targetPos - currentPos).Magnitude
 
                                 if distance < 15 then
                                     reached = true
                                     task.wait(0.05)
                                     if race.specialAfter and race.specialAfter[cpNum] then
-                                        local spec = race.specialAfter[cpNum]
+                                        local spec   = race.specialAfter[cpNum]
                                         local prevCp = checkpointsFolder:FindFirstChild(tostring(spec.fromPrev))
                                         if prevCp then
-                                            local fwdDir = (checkpoint.Position - prevCp.Position).Unit
+                                            local fwdDir     = (checkpoint.Position - prevCp.Position).Unit
                                             local clearTarget = checkpoint.Position + (fwdDir * spec.extraDist) + Vector3.new(0, config.heightOffset, 0)
-                                            local cleared = false
+                                            local cleared    = false
                                             while not cleared and config.isToggled do
                                                 RunService.Heartbeat:Wait()
-                                                if not rootPart or not rootPart.Parent then config.isToggled = false break end
+                                                if not rootPart or not rootPart.Parent then config.isToggled = false; break end
                                                 local dist2 = (clearTarget - rootPart.Position).Magnitude
                                                 if dist2 < 20 then
                                                     cleared = true
                                                 else
                                                     flyMover.Velocity = (clearTarget - rootPart.Position).Unit * config.flySpeed
-                                                    flyGyro.CFrame = CFrame.new(rootPart.Position, clearTarget)
+                                                    flyGyro.CFrame    = CFrame.new(rootPart.Position, clearTarget)
                                                 end
                                             end
                                         end
                                     end
                                 else
                                     flyMover.Velocity = (targetPos - currentPos).Unit * config.flySpeed
-                                    flyGyro.CFrame = CFrame.new(currentPos, targetPos)
+                                    flyGyro.CFrame    = CFrame.new(currentPos, targetPos)
                                 end
                             end
                         end
@@ -804,12 +736,18 @@ local function loadMainScript()
                 end
             end
 
+            -- Reset UI po zakończeniu
             config.isToggled = false
             startBtnLabel.Text = "START AUTOFARM"
             btnGradient.Color = ColorSequence.new{
                 ColorSequenceKeypoint.new(0, Theme.Accent2),
                 ColorSequenceKeypoint.new(1, Theme.Accent1)
             }
+            -- Bounce po powrocie do START
+            TweenService:Create(startBtnScale, animBounce, {Scale = 1.06}):Play()
+            task.wait(0.4)
+            TweenService:Create(startBtnScale, animFast, {Scale = 1}):Play()
+
             stopDriving()
         end)
     end
@@ -820,37 +758,53 @@ local function loadMainScript()
             startBtnLabel.Text = "STOP AUTOFARM"
             btnGradient.Color = ColorSequence.new{
                 ColorSequenceKeypoint.new(0, Theme.Danger),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 30, 50))
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 40, 60))
             }
+            -- Bounce przy START
+            TweenService:Create(startBtnScale, animBounce, {Scale = 1.06}):Play()
+            task.wait(0.4)
+            TweenService:Create(startBtnScale, animFast, {Scale = 1}):Play()
             startDriving()
         else
+            config.isToggled = false
             startBtnLabel.Text = "START AUTOFARM"
             btnGradient.Color = ColorSequence.new{
                 ColorSequenceKeypoint.new(0, Theme.Accent2),
                 ColorSequenceKeypoint.new(1, Theme.Accent1)
             }
-            stopDriving()
+            -- Bounce przy STOP
+            TweenService:Create(startBtnScale, animBounce, {Scale = 1.06}):Play()
+            task.wait(0.4)
+            TweenService:Create(startBtnScale, animFast, {Scale = 1}):Play()
         end
     end)
 end
 
--- Weryfikacja wpisanego klucza
+-- ==========================================
+-- SUBMIT KEY
+-- ==========================================
 submitBtn.MouseButton1Click:Connect(function()
-    if keyInputBox.Text == CORRECT_KEY then
+    local key = keyInputBox.Text
+    if key == CORRECT_KEY then
+        -- Zielony flash — poprawny klucz
+        TweenService:Create(keyFrame, animFast, {BackgroundColor3 = Color3.fromRGB(14, 28, 16)}):Play()
+        TweenService:Create(mainStroke, animFast, {Color = Theme.Success, Transparency = 0.3}):Play()
         statusLabel.TextColor3 = Theme.Success
-        statusLabel.Text = "Correct Key! Loading..."
-        task.wait(1)
+        statusLabel.Text = "✓ Correct key! Loading..."
+        task.wait(0.7)
         loadMainScript()
     else
+        -- Czerwony flash + shake — błędny klucz
+        TweenService:Create(keyFrame, animFast, {BackgroundColor3 = Color3.fromRGB(28, 10, 10)}):Play()
+        TweenService:Create(mainStroke, animFast, {Color = Theme.Danger, Transparency = 0.2}):Play()
         statusLabel.TextColor3 = Theme.Danger
-        statusLabel.Text = "Invalid Key! Try again."
-        
-        -- Animacja "szejka" (trzęsienie ramki przy błędzie)
-        local originalPos = keyFrame.Position
-        for i = 1, 5 do
-            keyFrame.Position = originalPos + UDim2.new(0, (i % 2 == 0 and 5 or -5), 0, 0)
-            task.wait(0.04)
-        end
-        keyFrame.Position = originalPos
+        statusLabel.Text = "✗ Invalid key!"
+        shakeFrame(keyFrame)
+        task.wait(0.6)
+        TweenService:Create(keyFrame, animFast, {BackgroundColor3 = Theme.Background}):Play()
+        TweenService:Create(mainStroke, animFast, {Color = Color3.fromRGB(255,255,255), Transparency = 0.9}):Play()
+        task.wait(2)
+        statusLabel.TextColor3 = Theme.TextSecondary
+        statusLabel.Text = "Join Discord to get the key"
     end
 end)
