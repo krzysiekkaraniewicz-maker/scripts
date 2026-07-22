@@ -1,1 +1,856 @@
-do local v0=game:GetService("Players");local v1=game:GetService("TweenService");local v2=game:GetService("UserInputService");local v3=game:GetService("CoreGui");local v4=v0.LocalPlayer;local v5="Aurora123";local v6="https://discord.gg/BGk6XwEZY";local v7={Background=Color3.fromRGB(15,46 -31 ,20),Panel=Color3.fromRGB(22,40 -(10 + 8) ,28),TextPrimary=Color3.fromRGB(980 -725 ,255,255),TextSecondary=Color3.fromRGB(582 -(416 + 26) ,140,160),Accent1=Color3.fromRGB(383 -263 ,35 + 45 ,450 -195 ),Accent2=Color3.fromRGB(438 -(145 + 293) ,600 -(44 + 386) ,1741 -(998 + 488) ),Success=Color3.fromRGB(15 + 31 ,168 + 36 ,885 -(201 + 571) ),Danger=Color3.fromRGB(255,1198 -(116 + 1022) ,333 -253 ),MainFont=Enum.Font.BuilderSansExtraBold};local v8=TweenInfo.new(0.2 + 0 ,Enum.EasingStyle.Sine,Enum.EasingDirection.Out);local v9=TweenInfo.new(0.5,Enum.EasingStyle.Back,Enum.EasingDirection.Out);for v120,v121 in ipairs({v3,v4:WaitForChild("PlayerGui")}) do local v122=0 -0 ;while true do if (v122==(859 -(814 + 45))) then if v121:FindFirstChild("AuroraKeyGUI") then v121:FindFirstChild("AuroraKeyGUI"):Destroy();end if v121:FindFirstChild("AuroraRaceGUI") then v121:FindFirstChild("AuroraRaceGUI"):Destroy();end break;end end end local v10=Instance.new("ScreenGui");v10.Name="AuroraKeyGUI";v10.ResetOnSpawn=false;v10.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;if  not pcall(function() v10.Parent=v3;end) then v10.Parent=v4.PlayerGui;end local v15=Instance.new("Frame");v15.Size=UDim2.new(0,788 -468 ,0 + 0 ,92 + 168 );v15.Position=UDim2.new(0.5,0,885.5 -(261 + 624) ,0 -0 );v15.AnchorPoint=Vector2.new(1080.5 -(1020 + 60) ,1423.5 -(630 + 793) );v15.BackgroundColor3=v7.Background;v15.BorderSizePixel=0;v15.Parent=v10;local v23=Instance.new("UICorner",v15);v23.CornerRadius=UDim.new(0,12);local v25=Instance.new("UIStroke",v15);v25.Color=Color3.fromRGB(255,255,863 -608 );v25.Thickness=4 -3 ;v25.Transparency=0.9;local v29=Instance.new("UIScale",v15);v29.Scale=0 + 0 ;v1:Create(v29,v9,{Scale=3 -2 }):Play();local v31=Instance.new("Frame",v15);v31.Size=UDim2.new(1748 -(760 + 987) ,1913 -(1789 + 124) ,766 -(745 + 21) ,14 + 26 );v31.BackgroundTransparency=1;local v34=Instance.new("TextLabel",v31);v34.Size=UDim2.new(2 -1 ,0,3 -2 ,0 + 0 );v34.BackgroundTransparency=1;v34.Font=v7.MainFont;v34.TextSize=13 + 3 ;v34.TextColor3=v7.TextPrimary;v34.Text="AURORA HUB — KEY SYSTEM";local v43=Instance.new("UIGradient",v34);v43.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,v7.Accent2),ColorSequenceKeypoint.new(4 -3 ,v7.Accent1)});local v45=Instance.new("Frame",v31);v45.Size=UDim2.new(1,0 + 0 ,0 -0 ,1);v45.Position=UDim2.new(0,1413 -(447 + 966) ,2 -1 ,0);v45.BackgroundColor3=Color3.fromRGB(255,2072 -(1703 + 114) ,255);v45.BackgroundTransparency=701.9 -(376 + 325) ;v45.BorderSizePixel=0 -0 ;local v51,v52,v53;v31.InputBegan:Connect(function(v124) if ((v124.UserInputType==Enum.UserInputType.MouseButton1) or (v124.UserInputType==Enum.UserInputType.Touch)) then local v373=0;while true do if (v373==1) then v53=v15.Position;v124.Changed:Connect(function() if (v124.UserInputState==Enum.UserInputState.End) then v51=false;end end);break;end if (v373==(0 -0)) then v51=true;v52=v124.Position;v373=1 + 0 ;end end end end);v2.InputChanged:Connect(function(v125) if (v51 and ((v125.UserInputType==Enum.UserInputType.MouseMovement) or (v125.UserInputType==Enum.UserInputType.Touch))) then local v374=v125.Position-v52 ;v15.Position=UDim2.new(v53.X.Scale,v53.X.Offset + v374.X ,v53.Y.Scale,v53.Y.Offset + v374.Y );end end);local v54=Instance.new("Frame",v15);v54.Size=UDim2.new(2 -1 , -(42 -(9 + 5)),1, -(426 -(85 + 291)));v54.Position=UDim2.new(1265 -(243 + 1022) ,14,0 -0 ,45);v54.BackgroundTransparency=1 + 0 ;local v58=Instance.new("UIListLayout",v54);v58.SortOrder=Enum.SortOrder.LayoutOrder;v58.Padding=UDim.new(1180 -(1123 + 57) ,9 + 1 );v58.HorizontalAlignment=Enum.HorizontalAlignment.Center;local v64=Instance.new("TextBox",v54);v64.Size=UDim2.new(255 -(163 + 91) ,0,1930 -(1869 + 61) ,12 + 30 );v64.BackgroundColor3=v7.Panel;v64.Font=v7.MainFont;v64.TextSize=13;v64.TextColor3=v7.TextPrimary;v64.PlaceholderText="Enter Key Here...";v64.PlaceholderColor3=v7.TextSecondary;v64.Text="";v64.ClearTextOnFocus=false;v64.LayoutOrder=3 -2 ;local v77=Instance.new("UICorner",v64);v77.CornerRadius=UDim.new(0 -0 ,2 + 6 );local v79=Instance.new("UIStroke",v64);v79.Color=Color3.fromRGB(349 -94 ,240 + 15 ,1729 -(1329 + 145) );v79.Transparency=0.9;local function v82(v126) local v127=Instance.new("UIScale",v126);v126.MouseEnter:Connect(function() v1:Create(v127,v8,{Scale=1.02}):Play();end);v126.MouseLeave:Connect(function() v1:Create(v127,v8,{Scale=1}):Play();end);v126.MouseButton1Down:Connect(function() v1:Create(v127,v8,{Scale=971.95 -(140 + 831) }):Play();end);v126.MouseButton1Up:Connect(function() v1:Create(v127,v8,{Scale=1851.02 -(1409 + 441) }):Play();end);end local v83=Instance.new("TextButton",v54);v83.Size=UDim2.new(719 -(15 + 703) ,0 + 0 ,438 -(262 + 176) ,1761 -(345 + 1376) );v83.BackgroundColor3=v7.Accent1;v83.Font=v7.MainFont;v83.TextSize=702 -(198 + 490) ;v83.TextColor3=v7.TextPrimary;v83.Text="SUBMIT KEY";v83.AutoButtonColor=false;v83.LayoutOrder=2;local v93=Instance.new("UICorner",v83);v93.CornerRadius=UDim.new(0,35 -27 );local v95=Instance.new("UIGradient",v83);v95.Color=ColorSequence.new({ColorSequenceKeypoint.new(1206 -(696 + 510) ,v7.Accent2),ColorSequenceKeypoint.new(1,v7.Accent1)});v82(v83);local v97=Instance.new("TextButton",v54);v97.Size=UDim2.new(1,0,1262 -(1091 + 171) ,6 + 30 );v97.BackgroundColor3=v7.Panel;v97.Font=v7.MainFont;v97.TextSize=40 -27 ;v97.TextColor3=v7.TextSecondary;v97.Text="GET KEY (DISCORD)";v97.AutoButtonColor=false;v97.LayoutOrder=9 -6 ;local v106=Instance.new("UICorner",v97);v106.CornerRadius=UDim.new(374 -(123 + 251) ,8);local v108=Instance.new("UIStroke",v97);v108.Color=Color3.fromRGB(1267 -1012 ,953 -(208 + 490) ,255);v108.Transparency=0.9 + 0 ;v82(v97);local v111=Instance.new("TextLabel",v54);v111.Size=UDim2.new(1 + 0 ,836 -(660 + 176) ,0 + 0 ,222 -(14 + 188) );v111.BackgroundTransparency=676 -(534 + 141) ;v111.Font=v7.MainFont;v111.TextSize=5 + 6 ;v111.TextColor3=v7.TextSecondary;v111.Text="Join Discord to get the key";v111.LayoutOrder=4 + 0 ;v97.MouseButton1Click:Connect(function() local v128=0 + 0 ;while true do if (v128==(1 -0)) then v111.Text="Copied Discord link to clipboard!";task.wait(2.5 -0 );v128=5 -3 ;end if (v128==(0 + 0)) then if setclipboard then setclipboard(v6);elseif toclipboard then toclipboard(v6);end v111.TextColor3=v7.Accent2;v128=1 + 0 ;end if (v128==(398 -(115 + 281))) then v111.TextColor3=v7.TextSecondary;v111.Text="Join Discord to get the key";break;end end end);local function v119() v1:Create(v29,v9,{Scale=0 -0 }):Play();task.wait(0.4);v10:Destroy();local v129=game:GetService("RunService");local v130=workspace:WaitForChild("Races");local v131={{name="Miami City Circuit",folder="Miami City Circuit",checkpoints={1,7 -5 ,3 -0 ,4,7 -2 ,291 -(134 + 151) ,12 -5 ,8,1999 -(582 + 1408) ,12 -2 ,11,15 -3 ,254 -(187 + 54) ,10 + 4 ,31 -16 ,2 + 14 ,17,1018 -(451 + 549) ,19,20,21,22,9 + 14 ,35 -11 ,1606 -(1535 + 46) ,4 + 22 ,587 -(306 + 254) ,28,56 -27 ,30,31,22 + 10 ,79 -46 ,34,35,608 -(426 + 146) ,37,849 -(569 + 242) },specialAfter={[77 -50 ]={fromPrev=2 + 24 ,extraDist=420}}},{name="Air Race",folder="Air Race",checkpoints={1272 -(945 + 326) ,2 + 0 ,3 + 0 ,4,1293 -(993 + 295) ,6,3 + 4 ,3 + 5 ,9,1779 -(1749 + 20) ,1333 -(1249 + 73) ,1157 -(466 + 679) ,30 -17 ,14,15,6 + 10 ,50 -33 ,132 -(4 + 110) ,603 -(57 + 527) ,20}},{name="Around The Map",folder="Around The Map",checkpoints={1 -0 ,168 -(122 + 44) ,3,12 -8 ,5 + 0 ,6,13 -6 ,73 -(30 + 35) ,7 + 2 ,37 -27 ,29 -18 ,592 -(361 + 219) ,13,14,15,16,17,18,19,13 + 7 ,21,872 -(20 + 830) ,23,150 -(116 + 10) ,763 -(542 + 196) ,8 + 18 ,10 + 17 ,73 -45 ,1580 -(1126 + 425) ,117 -87 ,90 -59 ,32,149 -116 ,8 + 26 }},{name="Beach Dash",folder="Beach Dash",checkpoints={1 + 0 ,2,3,3 + 1 ,13 -8 ,2 + 4 }},{name="Circuit Moto Race",folder="Circuit Moto Race",checkpoints={1 + 0 ,2 + 0 ,2 + 1 ,9 -5 ,736 -(476 + 255) ,4 + 2 ,7,8,9,10,16 -5 ,348 -(144 + 192) ,229 -(42 + 174) ,12 + 2 ,15,16,17,54 -36 ,15 + 4 ,1995 -(1913 + 62) ,55 -34 }},{name="Circuit Race",folder="Circuit Race",checkpoints={1,2,3 + 0 ,4,5,17 -11 ,6 + 1 ,8,1010 -(938 + 63) ,1135 -(936 + 189) ,11,8 + 4 ,280 -(176 + 91) ,20 -6 ,1890 -(157 + 1718) ,13 + 3 ,57 -40 ,18,19,46 -26 ,21,40 -18 ,61 -38 ,1251 -(322 + 905) ,25,26,899 -(826 + 46) ,88 -60 }},{name="Desert Race",folder="Desert Race",checkpoints={1899 -(260 + 1638) ,2,443 -(382 + 58) ,4 + 0 ,5,17 -11 ,15 -8 ,1 + 7 ,223 -(22 + 192) ,10}},{name="Drag Race",folder="Drag Race",checkpoints={2 -1 }},{name="Highway Race",folder="Highway Race",checkpoints={11,40 -28 ,23 -10 ,250 -(141 + 95) ,15,16,40 -23 ,5 + 13 ,14 + 5 ,20,21,185 -(92 + 71) ,38 -15 ,20 + 4 ,62 -37 ,14 + 12 ,876 -(254 + 595) ,154 -(55 + 71) ,1819 -(573 + 1217) ,83 -53 }},{name="Mountain Dash",folder="Mountain Dash",checkpoints={940 -(714 + 225) ,2 -0 ,3,810 -(118 + 688) ,5,1892 -(927 + 959) ,7,8,16 -7 ,24 -14 ,11,29 -17 ,13,14,11 + 4 ,16,17,13 + 5 ,18 + 1 ,753 -(711 + 22) ,21,22,6 + 17 ,24,1769 -(1344 + 400) ,26,22 + 5 ,28,93 -64 ,436 -(183 + 223) ,31,12 + 20 }},{name="Offroad Race",folder="Offroad Race",checkpoints={1 + 0 ,1 + 1 ,3,16 -12 ,9 -4 ,2 + 4 ,7,23 -15 ,9,10 + 0 ,5 + 6 }},{name="Tropical Dash",folder="Tropical Dash",checkpoints={1 + 0 ,1169 -(645 + 522) ,3 + 0 ,4,5,28 -22 ,7,1844 -(1045 + 791) }}};local v132={minSpeed=25 -15 ,maxSpeed=3000,flySpeed=76 -26 ,minLaps=505 -(351 + 154) ,maxLaps=5,targetLaps=0,heightOffset=1584 -(1281 + 293) ,isToggled=false,isDelayEnabled=false,selectedRaceIndex=267 -(28 + 238) };local v133,v134,v135;local v136=Instance.new("ScreenGui");v136.Name="AuroraRaceGUI";v136.ResetOnSpawn=false;v136.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;if  not pcall(function() v136.Parent=v3;end) then v136.Parent=v4.PlayerGui;end local v141=Instance.new("Frame");v141.Size=UDim2.new(0 -0 ,1869 -(1381 + 178) ,0,394 + 26 );v141.Position=UDim2.new(0.5 + 0 ,0 + 0 ,0.5,0 -0 );v141.AnchorPoint=Vector2.new(0.5,0.5);v141.BackgroundColor3=v7.Background;v141.BorderSizePixel=0 + 0 ;v141.Parent=v136;local v149=Instance.new("UICorner",v141);v149.CornerRadius=UDim.new(470 -(381 + 89) ,11 + 1 );local v151=Instance.new("UIStroke",v141);v151.Color=Color3.fromRGB(173 + 82 ,255,436 -181 );v151.Thickness=1157 -(1074 + 82) ;v151.Transparency=0.9 -0 ;local v155=Instance.new("UIScale",v141);v155.Scale=0;v1:Create(v155,v9,{Scale=1785 -(214 + 1570) }):Play();local v157=Instance.new("Frame",v141);v157.Size=UDim2.new(1,1455 -(990 + 465) ,0,17 + 23 );v157.BackgroundTransparency=1;local v160=Instance.new("TextLabel",v157);v160.Size=UDim2.new(1 + 0 , -(30 + 0),3 -2 ,1726 -(1668 + 58) );v160.Position=UDim2.new(626 -(512 + 114) ,39 -24 ,0,0);v160.BackgroundTransparency=1 -0 ;v160.Font=v7.MainFont;v160.TextSize=55 -39 ;v160.TextColor3=Color3.fromRGB(119 + 136 ,48 + 207 ,222 + 33 );v160.TextXAlignment=Enum.TextXAlignment.Left;v160.Text="AURORA AUTOFARM";local v171=Instance.new("UIGradient",v160);v171.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,v7.Accent2),ColorSequenceKeypoint.new(1995 -(109 + 1885) ,v7.Accent1)});local v173=Instance.new("Frame",v157);v173.Size=UDim2.new(1470 -(1269 + 200) ,0 -0 ,815 -(98 + 717) ,1);v173.Position=UDim2.new(0,826 -(802 + 24) ,1 -0 ,0 -0 );v173.BackgroundColor3=Color3.fromRGB(38 + 217 ,255,196 + 59 );v173.BackgroundTransparency=0.9;v173.BorderSizePixel=0;local v179,v180,v181;v157.InputBegan:Connect(function(v305) if ((v305.UserInputType==Enum.UserInputType.MouseButton1) or (v305.UserInputType==Enum.UserInputType.Touch)) then local v396=0 + 0 ;while true do if (v396==(1 + 0)) then v181=v141.Position;v305.Changed:Connect(function() if (v305.UserInputState==Enum.UserInputState.End) then v179=false;end end);break;end if (v396==(0 -0)) then v179=true;v180=v305.Position;v396=3 -2 ;end end end end);v2.InputChanged:Connect(function(v306) if (v179 and ((v306.UserInputType==Enum.UserInputType.MouseMovement) or (v306.UserInputType==Enum.UserInputType.Touch))) then local v397=0 + 0 ;local v398;while true do if (v397==0) then v398=v306.Position-v180 ;v141.Position=UDim2.new(v181.X.Scale,v181.X.Offset + v398.X ,v181.Y.Scale,v181.Y.Offset + v398.Y );break;end end end end);local v182=Instance.new("Frame",v141);v182.Size=UDim2.new(1 + 0 ,0 + 0 ,1 + 0 , -(19 + 21));v182.Position=UDim2.new(0,1433 -(797 + 636) ,0,194 -154 );v182.BackgroundTransparency=1620 -(1427 + 192) ;local v186=Instance.new("UIListLayout",v182);v186.SortOrder=Enum.SortOrder.LayoutOrder;v186.Padding=UDim.new(0 + 0 ,27 -15 );v186.HorizontalAlignment=Enum.HorizontalAlignment.Center;local v192=Instance.new("UIPadding",v182);v192.PaddingTop=UDim.new(0,11 + 1 );v192.PaddingBottom=UDim.new(0,6 + 6 );v192.PaddingLeft=UDim.new(326 -(192 + 134) ,1290 -(316 + 960) );v192.PaddingRight=UDim.new(0 + 0 ,11 + 3 );local v197=Instance.new("Frame",v182);v197.Size=UDim2.new(1 + 0 ,0 -0 ,551 -(83 + 468) ,1858 -(1202 + 604) );v197.BackgroundTransparency=1;v197.LayoutOrder=4 -3 ;local v201=Instance.new("TextLabel",v197);v201.Size=UDim2.new(1 -0 ,0,0 -0 ,339 -(45 + 280) );v201.BackgroundTransparency=1 + 0 ;v201.Font=v7.MainFont;v201.TextSize=11 + 1 ;v201.TextColor3=v7.TextSecondary;v201.TextXAlignment=Enum.TextXAlignment.Left;v201.Text="SELECT RACE";local v210=Instance.new("Frame",v197);v210.Size=UDim2.new(1,0 + 0 ,0 + 0 ,6 + 28 );v210.Position=UDim2.new(0 -0 ,1911 -(340 + 1571) ,0,8 + 10 );v210.BackgroundColor3=v7.Panel;local v215=Instance.new("UICorner",v210);v215.CornerRadius=UDim.new(1772 -(1733 + 39) ,21 -13 );local v217=Instance.new("UIStroke",v210);v217.Color=Color3.fromRGB(1289 -(125 + 909) ,2203 -(1096 + 852) ,115 + 140 );v217.Transparency=0.9;local v220=Instance.new("TextButton",v210);v220.Size=UDim2.new(0 -0 ,34,1,0 + 0 );v220.BackgroundTransparency=513 -(409 + 103) ;v220.Text="<";v220.Font=v7.MainFont;v220.TextColor3=v7.Accent2;v220.TextSize=18;local v228=Instance.new("TextButton",v210);v228.Size=UDim2.new(236 -(46 + 190) ,129 -(51 + 44) ,1,0 + 0 );v228.Position=UDim2.new(1, -(1351 -(1114 + 203)),726 -(228 + 498) ,0);v228.BackgroundTransparency=1;v228.Text=">";v228.Font=v7.MainFont;v228.TextColor3=v7.Accent2;v228.TextSize=18;local v236=Instance.new("TextLabel",v210);v236.Size=UDim2.new(1, -(15 + 53),1 + 0 ,663 -(174 + 489) );v236.Position=UDim2.new(0 -0 ,1939 -(830 + 1075) ,524 -(303 + 221) ,0);v236.BackgroundTransparency=1270 -(231 + 1038) ;v236.Font=v7.MainFont;v236.TextColor3=v7.TextPrimary;v236.TextSize=11 + 2 ;v236.Text=v131[v132.selectedRaceIndex].name;local function v246() local v307=1162 -(171 + 991) ;while true do if (v307==0) then v1:Create(v236,v8,{TextTransparency=4 -3 }):Play();task.wait(0.1 -0 );v307=2 -1 ;end if (v307==(1 + 0)) then v236.Text=v131[v132.selectedRaceIndex].name;v1:Create(v236,v8,{TextTransparency=0 -0 }):Play();break;end end end v220.MouseButton1Click:Connect(function() if v132.isToggled then return;end v132.selectedRaceIndex=((v132.selectedRaceIndex>(2 -1)) and (v132.selectedRaceIndex-1)) or  #v131 ;v246();end);v228.MouseButton1Click:Connect(function() local v309=0 -0 ;while true do if (1==v309) then v246();break;end if (v309==(0 -0)) then if v132.isToggled then return;end v132.selectedRaceIndex=((v132.selectedRaceIndex< #v131) and (v132.selectedRaceIndex + 1)) or 1 ;v309=1249 -(111 + 1137) ;end end end);local function v247(v310,v311,v312,v313,v314,v315) local v316=Instance.new("Frame",v182);v316.Size=UDim2.new(159 -(91 + 67) ,0,0 -0 ,11 + 31 );v316.BackgroundTransparency=524 -(423 + 100) ;v316.LayoutOrder=v315;local v320=Instance.new("TextLabel",v316);v320.Size=UDim2.new(0.5 + 0 ,0 -0 ,0 + 0 ,785 -(326 + 445) );v320.BackgroundTransparency=4 -3 ;v320.Font=v7.MainFont;v320.TextColor3=v7.TextSecondary;v320.TextSize=26 -14 ;v320.TextXAlignment=Enum.TextXAlignment.Left;v320.Text=v310;local v331=Instance.new("TextLabel",v316);v331.Size=UDim2.new(0.5 -0 ,711 -(530 + 181) ,0,14);v331.Position=UDim2.new(881.5 -(614 + 267) ,0,0,0);v331.BackgroundTransparency=33 -(19 + 13) ;v331.Font=v7.MainFont;v331.TextColor3=v7.TextPrimary;v331.TextSize=12;v331.TextXAlignment=Enum.TextXAlignment.Right;v331.Text=v314(v313);local v342=Instance.new("TextButton",v316);v342.Size=UDim2.new(1,0 -0 ,0 -0 ,17 -11 );v342.Position=UDim2.new(0 + 0 ,0 -0 ,0 -0 ,1836 -(1293 + 519) );v342.BackgroundColor3=v7.Panel;v342.Text="";v342.AutoButtonColor=false;local v349=Instance.new("UICorner",v342);v349.CornerRadius=UDim.new(1 -0 ,0);local v351=Instance.new("UIStroke",v342);v351.Color=Color3.fromRGB(665 -410 ,255,255);v351.Transparency=0.9 -0 ;local v354=Instance.new("Frame",v342);v354.Size=UDim2.new((v313-v311)/(v312-v311) ,0,4 -3 ,0 -0 );v354.BackgroundColor3=Color3.fromRGB(136 + 119 ,53 + 202 ,592 -337 );v354.BorderSizePixel=0 + 0 ;local v358=Instance.new("UICorner",v354);v358.CornerRadius=UDim.new(1 + 0 ,0);local v360=Instance.new("UIGradient",v354);v360.Color=ColorSequence.new({ColorSequenceKeypoint.new(1096 -(709 + 387) ,v7.Accent2),ColorSequenceKeypoint.new(1859 -(673 + 1185) ,v7.Accent1)});local v362=false;local function v363(v378) local v379=math.clamp((v378.Position.X-v342.AbsolutePosition.X)/v342.AbsoluteSize.X ,0,2 -1 );v1:Create(v354,v8,{Size=UDim2.new(v379,0,3 -2 ,0 -0 )}):Play();local v380=math.floor(v311 + ((v312-v311) * v379) + 0.5 );v331.Text=v314(v380);return v380;end v342.InputBegan:Connect(function(v382) if ((v382.UserInputType==Enum.UserInputType.MouseButton1) or (v382.UserInputType==Enum.UserInputType.Touch)) then v362=true;return v363(v382);end end);v2.InputEnded:Connect(function(v383) if ((v383.UserInputType==Enum.UserInputType.MouseButton1) or (v383.UserInputType==Enum.UserInputType.Touch)) then v362=false;end end);return {bg=v342,updateFunc=v363,getDragging=function() return v362;end};end local v248=v247("FLY SPEED",v132.minSpeed,v132.maxSpeed,v132.flySpeed,function(v364) return tostring(v364);end,2);local v249=v247("LAPS TARGET",v132.minLaps,v132.maxLaps,v132.targetLaps,function(v365) return ((v365==0) and "INFINITE") or tostring(v365) ;end,3);v2.InputChanged:Connect(function(v366) if ((v366.UserInputType==Enum.UserInputType.MouseMovement) or (v366.UserInputType==Enum.UserInputType.Touch)) then local v399=0 + 0 ;while true do if (v399==(0 + 0)) then if v248.getDragging() then v132.flySpeed=v248.updateFunc(v366);end if v249.getDragging() then v132.targetLaps=v249.updateFunc(v366);end break;end end end end);local v250=Instance.new("TextButton",v182);v250.Size=UDim2.new(1,0,0 -0 ,36);v250.BackgroundColor3=v7.Panel;v250.Font=v7.MainFont;v250.TextSize=13;v250.TextColor3=v7.TextSecondary;v250.Text="Loop Wait (15s): OFF";v250.AutoButtonColor=false;v250.LayoutOrder=4;local v259=Instance.new("UICorner",v250);v259.CornerRadius=UDim.new(0 + 0 ,15 -7 );local v261=Instance.new("UIStroke",v250);v261.Color=Color3.fromRGB(500 -245 ,2135 -(446 + 1434) ,1538 -(1040 + 243) );v261.Transparency=0.9 -0 ;v82(v250);v250.MouseButton1Click:Connect(function() v132.isDelayEnabled= not v132.isDelayEnabled;if v132.isDelayEnabled then v250.Text="Loop Wait (15s): ON";v1:Create(v250,v8,{BackgroundColor3=Color3.fromRGB(1882 -(559 + 1288) ,2051 -(609 + 1322) ,514 -(13 + 441) ),TextColor3=v7.TextPrimary}):Play();else v250.Text="Loop Wait (15s): OFF";v1:Create(v250,v8,{BackgroundColor3=v7.Panel,TextColor3=v7.TextSecondary}):Play();end end);local v264=Instance.new("TextButton",v182);v264.Size=UDim2.new(1,0 -0 ,0 -0 ,44);v264.BackgroundTransparency=4 -3 ;v264.Text="";v264.AutoButtonColor=false;v264.LayoutOrder=1 + 4 ;local v270=Instance.new("Frame",v264);v270.Size=UDim2.new(3 -2 ,0 + 0 ,1 + 0 ,0 -0 );v270.BackgroundColor3=Color3.fromRGB(140 + 115 ,468 -213 ,255);v270.BorderSizePixel=0 + 0 ;local v274=Instance.new("UICorner",v270);v274.CornerRadius=UDim.new(0 + 0 ,8 + 2 );local v276=Instance.new("UIGradient",v270);v276.Color=ColorSequence.new({ColorSequenceKeypoint.new(0 + 0 ,v7.Accent2),ColorSequenceKeypoint.new(2 -1 ,v7.Accent1)});local v278=Instance.new("TextLabel",v264);v278.Size=UDim2.new(1,0 + 0 ,1 + 0 ,0);v278.BackgroundTransparency=1 + 0 ;v278.Font=v7.MainFont;v278.TextSize=14 + 1 ;v278.TextColor3=Color3.fromRGB(255,185 + 70 ,255);v278.Text="START AUTOFARM";v278.ZIndex=4 -1 ;local v286=Instance.new("UIStroke",v278);v286.Color=Color3.fromRGB(0 + 0 ,667 -(89 + 578) ,0 + 0 );v286.Thickness=1.5 -0 ;v286.Transparency=1049.5 -(572 + 477) ;v82(v264);local v290=Instance.new("TextLabel",v182);v290.Size=UDim2.new(1 + 0 ,0 + 0 ,0,16);v290.BackgroundTransparency=1;v290.Font=v7.MainFont;v290.TextSize=2 + 9 ;v290.TextColor3=v7.TextSecondary;v290.Text="MADE BY L8LY4U | AURORA HUB";v290.LayoutOrder=92 -(84 + 2) ;local function v298() local v368=0;while true do if (v368==(0 -0)) then if v135 then v135:Disconnect();end v135=v129.Stepped:Connect(function() local v416=0;local v417;while true do if (v416==(0 + 0)) then v417=v4.Character;if v417 then for v472,v473 in ipairs(v417:GetDescendants()) do if v473:IsA("BasePart") then v473.CanCollide=false;end end end break;end end end);break;end end end local function v299() if v135 then v135:Disconnect();v135=nil;end end local function v300() local v369=842 -(497 + 345) ;local v370;local v371;while true do if (v369==0) then v299();if v133 then local v434=0 + 0 ;while true do if (v434==(0 + 0)) then v133:Destroy();v133=nil;break;end end end v369=1;end if (v369==(1334 -(605 + 728))) then if v134 then local v435=0 + 0 ;while true do if (v435==(0 -0)) then v134:Destroy();v134=nil;break;end end end v370=v4.Character;v369=1 + 1 ;end if (v369==2) then v371=v370 and v370:FindFirstChild("HumanoidRootPart") ;if v371 then local v436=v371.AssemblyRootPart or v371 ;v436.AssemblyLinearVelocity=Vector3.zero;v436.AssemblyAngularVelocity=Vector3.zero;end break;end end end local function v301() task.spawn(function() v298();while v132.isToggled do local v402=v131[v132.selectedRaceIndex];local v403=v130:FindFirstChild(v402.folder);local v404=v403 and v403:FindFirstChild("Checkpoints") ;if  not v404 then warn("Nie znaleziono checkpointów dla: "   .. v402.folder );v132.isToggled=false;break;end local v405=0;while v132.isToggled do if ((v132.targetLaps>(0 -0)) and (v405>=v132.targetLaps)) then break;end local v410=v4.Character;local v411=v410 and v410:FindFirstChild("HumanoidRootPart") ;if  not v411 then v132.isToggled=false;break;end local v412=v411.AssemblyRootPart or v411 ;if ( not v133 or  not v133.Parent) then local v441=0 + 0 ;while true do if (v441==0) then v133=Instance.new("BodyVelocity");v133.MaxForce=Vector3.new(math.huge,math.huge,math.huge);v441=1;end if (v441==(2 -1)) then v133.Velocity=Vector3.zero;v133.Parent=v412;break;end end end if ( not v134 or  not v134.Parent) then local v442=0 + 0 ;while true do if (v442==0) then v134=Instance.new("BodyGyro");v134.MaxTorque=Vector3.new(math.huge,math.huge,math.huge);v442=490 -(457 + 32) ;end if (v442==2) then v134.CFrame=v412.CFrame;v134.Parent=v412;break;end if (v442==(1 + 0)) then v134.P=4402 -(832 + 570) ;v134.D=500;v442=2 + 0 ;end end end v405=v405 + 1 + 0 ;for v419,v420 in ipairs(v402.checkpoints) do if  not v132.isToggled then break;end local v421=v404:FindFirstChild(tostring(v420));if v421 then local v448=false;while  not v448 and v132.isToggled  do v129.Heartbeat:Wait();if ( not v412 or  not v412.Parent) then v132.isToggled=false;break;end local v452=v412.Position;local v453=v421.Position + Vector3.new(0 -0 ,v132.heightOffset,0) ;local v454=(v453-v452).Magnitude;if (v454<(8 + 7)) then local v469=796 -(588 + 208) ;while true do if (v469==1) then if (v402.specialAfter and v402.specialAfter[v420]) then local v475=0 -0 ;local v476;local v477;while true do if (v475==(1801 -(884 + 916))) then if v477 then local v479=(v421.Position-v477.Position).Unit;local v480=v421.Position + (v479 * v476.extraDist) + Vector3.new(0,v132.heightOffset,0 -0 ) ;local v481=false;while  not v481 and v132.isToggled  do v129.Heartbeat:Wait();if ( not v412 or  not v412.Parent) then v132.isToggled=false;break;end local v482=(v480-v412.Position).Magnitude;if (v482<(12 + 8)) then v481=true;else v133.Velocity=(v480-v412.Position).Unit * v132.flySpeed ;v134.CFrame=CFrame.new(v412.Position,v480);end end end break;end if (v475==0) then v476=v402.specialAfter[v420];v477=v404:FindFirstChild(tostring(v476.fromPrev));v475=1;end end end break;end if ((653 -(232 + 421))==v469) then v448=true;task.wait(1889.05 -(1569 + 320) );v469=1 + 0 ;end end else v133.Velocity=(v453-v452).Unit * v132.flySpeed ;v134.CFrame=CFrame.new(v452,v453);end end end end if  not v132.isToggled then break;end end v300();if (v132.isToggled and v132.isDelayEnabled) then local v422=0 + 0 ;while v132.isToggled and (v422<15)  do task.wait(0.1);v422=v422 + (0.1 -0) ;end else break;end end v132.isToggled=false;v278.Text="START AUTOFARM";v276.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,v7.Accent2),ColorSequenceKeypoint.new(1,v7.Accent1)});v300();end);end v264.MouseButton1Click:Connect(function() local v372=0;while true do if (v372==(0 + 0)) then v132.isToggled= not v132.isToggled;if v132.isToggled then local v443=0;while true do if ((1454 -(666 + 787))==v443) then v301();break;end if (v443==(425 -(360 + 65))) then v278.Text="STOP AUTOFARM";v276.Color=ColorSequence.new({ColorSequenceKeypoint.new(0 + 0 ,v7.Danger),ColorSequenceKeypoint.new(1,Color3.fromRGB(200,30,78 -28 ))});v443=1 + 0 ;end end else v278.Text="START AUTOFARM";v276.Color=ColorSequence.new({ColorSequenceKeypoint.new(0 -0 ,v7.Accent2),ColorSequenceKeypoint.new(182 -(92 + 89) ,v7.Accent1)});v300();end break;end end end);end v83.MouseButton1Click:Connect(function() if (v64.Text==v5) then local v387=0;while true do if (v387==(1 -0)) then task.wait(1 + 0 );v119();break;end if (v387==0) then v111.TextColor3=v7.Success;v111.Text="Correct Key! Loading...";v387=1 + 0 ;end end else local v388=0 -0 ;local v389;while true do if (v388==(1 + 0)) then v389=v15.Position;for v446=2 -1 ,5 + 0  do local v447=0 + 0 ;while true do if (v447==(0 -0)) then v15.Position=v389 + UDim2.new(0 + 0 ,(((v446%2)==(0 -0)) and (1249 -(485 + 759))) or  -(11 -6) ,1189 -(442 + 747) ,1135 -(832 + 303) ) ;task.wait(946.04 -(88 + 858) );break;end end end v388=2;end if (v388==(1 + 1)) then v15.Position=v389;break;end if (v388==0) then v111.TextColor3=v7.Danger;v111.Text="Invalid Key! Try again.";v388=1 + 0 ;end end end end); end
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+
+local player = Players.LocalPlayer
+
+-- ==========================================
+-- KONFIGURACJA KEY SYSTEMU
+-- ==========================================
+local CORRECT_KEY = "Aurora123"
+local DISCORD_LINK = "https://discord.gg/BGk6XwEZY"
+
+-- ==========================================
+-- MOTYW I ANIMACJE
+-- ==========================================
+local Theme = {
+    Background = Color3.fromRGB(15, 15, 20),
+    Panel = Color3.fromRGB(22, 22, 28),
+    TextPrimary = Color3.fromRGB(255, 255, 255),
+    TextSecondary = Color3.fromRGB(140, 140, 160),
+    Accent1 = Color3.fromRGB(120, 80, 255),
+    Accent2 = Color3.fromRGB(0, 170, 255),
+    Success = Color3.fromRGB(46, 204, 113),
+    Danger = Color3.fromRGB(255, 60, 80),
+    MainFont = Enum.Font.BuilderSansExtraBold
+}
+
+local animFast = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+local animSpring = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+
+-- Czyszczenie starych GUI
+for _, gui in ipairs({CoreGui, player:WaitForChild("PlayerGui")}) do
+    if gui:FindFirstChild("AuroraKeyGUI") then gui:FindFirstChild("AuroraKeyGUI"):Destroy() end
+    if gui:FindFirstChild("AuroraRaceGUI") then gui:FindFirstChild("AuroraRaceGUI"):Destroy() end
+end
+
+-- ==========================================
+-- TWORZENIE GUI KEY SYSTEMU
+-- ==========================================
+local keyGui = Instance.new("ScreenGui")
+keyGui.Name = "AuroraKeyGUI"
+keyGui.ResetOnSpawn = false
+keyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+if not pcall(function() keyGui.Parent = CoreGui end) then
+    keyGui.Parent = player.PlayerGui
+end
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 320, 0, 260)
+keyFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+keyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+keyFrame.BackgroundColor3 = Theme.Background
+keyFrame.BorderSizePixel = 0
+keyFrame.Parent = keyGui
+
+local frameCorner = Instance.new("UICorner", keyFrame)
+frameCorner.CornerRadius = UDim.new(0, 12)
+
+local mainStroke = Instance.new("UIStroke", keyFrame)
+mainStroke.Color = Color3.fromRGB(255, 255, 255)
+mainStroke.Thickness = 1
+mainStroke.Transparency = 0.9
+
+local mainScale = Instance.new("UIScale", keyFrame)
+mainScale.Scale = 0
+TweenService:Create(mainScale, animSpring, {Scale = 1}):Play()
+
+-- Topbar & Przeciąganie
+local topBar = Instance.new("Frame", keyFrame)
+topBar.Size = UDim2.new(1, 0, 0, 40)
+topBar.BackgroundTransparency = 1
+
+local titleLabel = Instance.new("TextLabel", topBar)
+titleLabel.Size = UDim2.new(1, 0, 1, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Theme.MainFont
+titleLabel.TextSize = 16
+titleLabel.TextColor3 = Theme.TextPrimary
+titleLabel.Text = "AURORA HUB — KEY SYSTEM"
+
+local titleGradient = Instance.new("UIGradient", titleLabel)
+titleGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Theme.Accent2),
+    ColorSequenceKeypoint.new(1, Theme.Accent1)
+}
+
+local topBarLine = Instance.new("Frame", topBar)
+topBarLine.Size = UDim2.new(1, 0, 0, 1)
+topBarLine.Position = UDim2.new(0, 0, 1, 0)
+topBarLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+topBarLine.BackgroundTransparency = 0.9
+topBarLine.BorderSizePixel = 0
+
+-- Przeciąganie okna
+local dragging, dragStart, startPos
+topBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = keyFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        keyFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Zawartość
+local content = Instance.new("Frame", keyFrame)
+content.Size = UDim2.new(1, -28, 1, -50)
+content.Position = UDim2.new(0, 14, 0, 45)
+content.BackgroundTransparency = 1
+
+local layout = Instance.new("UIListLayout", content)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Padding = UDim.new(0, 10)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+-- Input do wpisywania klucza
+local keyInputBox = Instance.new("TextBox", content)
+keyInputBox.Size = UDim2.new(1, 0, 0, 42)
+keyInputBox.BackgroundColor3 = Theme.Panel
+keyInputBox.Font = Theme.MainFont
+keyInputBox.TextSize = 13
+keyInputBox.TextColor3 = Theme.TextPrimary
+keyInputBox.PlaceholderText = "Enter Key Here..."
+keyInputBox.PlaceholderColor3 = Theme.TextSecondary
+keyInputBox.Text = ""
+keyInputBox.ClearTextOnFocus = false
+keyInputBox.LayoutOrder = 1
+
+local inputCorner = Instance.new("UICorner", keyInputBox)
+inputCorner.CornerRadius = UDim.new(0, 8)
+
+local inputStroke = Instance.new("UIStroke", keyInputBox)
+inputStroke.Color = Color3.fromRGB(255, 255, 255)
+inputStroke.Transparency = 0.9
+
+-- Funkcja animacji przycisków
+local function createButtonAnim(btn)
+    local scale = Instance.new("UIScale", btn)
+    btn.MouseEnter:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
+    btn.MouseLeave:Connect(function() TweenService:Create(scale, animFast, {Scale = 1}):Play() end)
+    btn.MouseButton1Down:Connect(function() TweenService:Create(scale, animFast, {Scale = 0.95}):Play() end)
+    btn.MouseButton1Up:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
+end
+
+-- Przycisk Submit Key
+local submitBtn = Instance.new("TextButton", content)
+submitBtn.Size = UDim2.new(1, 0, 0, 40)
+submitBtn.BackgroundColor3 = Theme.Accent1
+submitBtn.Font = Theme.MainFont
+submitBtn.TextSize = 14
+submitBtn.TextColor3 = Theme.TextPrimary
+submitBtn.Text = "SUBMIT KEY"
+submitBtn.AutoButtonColor = false
+submitBtn.LayoutOrder = 2
+
+local submitCorner = Instance.new("UICorner", submitBtn)
+submitCorner.CornerRadius = UDim.new(0, 8)
+
+local submitGrad = Instance.new("UIGradient", submitBtn)
+submitGrad.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Theme.Accent2),
+    ColorSequenceKeypoint.new(1, Theme.Accent1)
+}
+
+createButtonAnim(submitBtn)
+
+-- Przycisk Get Key (Kopiowanie Discorda)
+local getKeyBtn = Instance.new("TextButton", content)
+getKeyBtn.Size = UDim2.new(1, 0, 0, 36)
+getKeyBtn.BackgroundColor3 = Theme.Panel
+getKeyBtn.Font = Theme.MainFont
+getKeyBtn.TextSize = 13
+getKeyBtn.TextColor3 = Theme.TextSecondary
+getKeyBtn.Text = "GET KEY (DISCORD)"
+getKeyBtn.AutoButtonColor = false
+getKeyBtn.LayoutOrder = 3
+
+local getKeyCorner = Instance.new("UICorner", getKeyBtn)
+getKeyCorner.CornerRadius = UDim.new(0, 8)
+
+local getKeyStroke = Instance.new("UIStroke", getKeyBtn)
+getKeyStroke.Color = Color3.fromRGB(255, 255, 255)
+getKeyStroke.Transparency = 0.9
+
+createButtonAnim(getKeyBtn)
+
+-- Status Info Label
+local statusLabel = Instance.new("TextLabel", content)
+statusLabel.Size = UDim2.new(1, 0, 0, 20)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Font = Theme.MainFont
+statusLabel.TextSize = 11
+statusLabel.TextColor3 = Theme.TextSecondary
+statusLabel.Text = "Join Discord to get the key"
+statusLabel.LayoutOrder = 4
+
+-- ==========================================
+-- LOGIKA KEY SYSTEMU
+-- ==========================================
+getKeyBtn.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(DISCORD_LINK)
+    elseif toclipboard then
+        toclipboard(DISCORD_LINK)
+    end
+    
+    statusLabel.TextColor3 = Theme.Accent2
+    statusLabel.Text = "Copied Discord link to clipboard!"
+    task.wait(2.5)
+    statusLabel.TextColor3 = Theme.TextSecondary
+    statusLabel.Text = "Join Discord to get the key"
+end)
+
+local function loadMainScript()
+    -- Animacja zamknięcia Key Systemu
+    TweenService:Create(mainScale, animSpring, {Scale = 0}):Play()
+    task.wait(0.4)
+    keyGui:Destroy()
+
+    -- ==========================================
+    -- GŁÓWNY KOD SKRYPTU AUTOFARM
+    -- ==========================================
+    local RunService = game:GetService("RunService")
+    local racesFolder = workspace:WaitForChild("Races")
+
+    local RACES = {
+        {
+            name = "Miami City Circuit",
+            folder = "Miami City Circuit",
+            checkpoints = {
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+                31, 32, 33, 34, 35, 36, 37, 38
+            },
+            specialAfter = {
+                [27] = {fromPrev = 26, extraDist = 420}
+            }
+        },
+        {
+            name = "Air Race",
+            folder = "Air Race",
+            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
+        },
+        {
+            name = "Around The Map",
+            folder = "Around The Map",
+            checkpoints = {
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+                31, 32, 33, 34
+            },
+        },
+        {
+            name = "Beach Dash",
+            folder = "Beach Dash",
+            checkpoints = {1, 2, 3, 4, 5, 6},
+        },
+        {
+            name = "Circuit Moto Race",
+            folder = "Circuit Moto Race",
+            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21},
+        },
+        {
+            name = "Circuit Race",
+            folder = "Circuit Race",
+            checkpoints = {
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 28
+            },
+        },
+        {
+            name = "Desert Race",
+            folder = "Desert Race",
+            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+        },
+        {
+            name = "Drag Race",
+            folder = "Drag Race",
+            checkpoints = {1},
+        },
+        {
+            name = "Highway Race",
+            folder = "Highway Race",
+            checkpoints = {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30},
+        },
+        {
+            name = "Mountain Dash",
+            folder = "Mountain Dash",
+            checkpoints = {
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+            },
+        },
+        {
+            name = "Offroad Race",
+            folder = "Offroad Race",
+            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
+        },
+        {
+            name = "Tropical Dash",
+            folder = "Tropical Dash",
+            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8},
+        },
+    }
+
+    local config = {
+        minSpeed = 10,
+        maxSpeed = 3000,
+        flySpeed = 50,
+        minLaps = 0,
+        maxLaps = 5,
+        targetLaps = 0,
+        heightOffset = 10,
+        isToggled = false,
+        isDelayEnabled = false,
+        selectedRaceIndex = 1,
+    }
+
+    local flyMover, flyGyro, noclipConnection
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "AuroraRaceGUI"
+    screenGui.ResetOnSpawn = false
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    if not pcall(function() screenGui.Parent = CoreGui end) then
+        screenGui.Parent = player.PlayerGui
+    end
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 310, 0, 420)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.BackgroundColor3 = Theme.Background
+    mainFrame.BorderSizePixel = 0
+    mainFrame.Parent = screenGui
+
+    local frameCorner2 = Instance.new("UICorner", mainFrame)
+    frameCorner2.CornerRadius = UDim.new(0, 12)
+
+    local mainStroke2 = Instance.new("UIStroke", mainFrame)
+    mainStroke2.Color = Color3.fromRGB(255, 255, 255)
+    mainStroke2.Thickness = 1
+    mainStroke2.Transparency = 0.9
+
+    local mainScale2 = Instance.new("UIScale", mainFrame)
+    mainScale2.Scale = 0
+    TweenService:Create(mainScale2, animSpring, {Scale = 1}):Play()
+
+    local topBar2 = Instance.new("Frame", mainFrame)
+    topBar2.Size = UDim2.new(1, 0, 0, 40)
+    topBar2.BackgroundTransparency = 1
+
+    local titleLabel2 = Instance.new("TextLabel", topBar2)
+    titleLabel2.Size = UDim2.new(1, -30, 1, 0)
+    titleLabel2.Position = UDim2.new(0, 15, 0, 0)
+    titleLabel2.BackgroundTransparency = 1
+    titleLabel2.Font = Theme.MainFont
+    titleLabel2.TextSize = 16
+    titleLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel2.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel2.Text = "AURORA AUTOFARM"
+
+    local titleGradient2 = Instance.new("UIGradient", titleLabel2)
+    titleGradient2.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Theme.Accent2),
+        ColorSequenceKeypoint.new(1, Theme.Accent1)
+    }
+
+    local topBarLine2 = Instance.new("Frame", topBar2)
+    topBarLine2.Size = UDim2.new(1, 0, 0, 1)
+    topBarLine2.Position = UDim2.new(0, 0, 1, 0)
+    topBarLine2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    topBarLine2.BackgroundTransparency = 0.9
+    topBarLine2.BorderSizePixel = 0
+
+    local dragging2, dragStart2, startPos2
+    topBar2.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging2 = true
+            dragStart2 = input.Position
+            startPos2 = mainFrame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging2 = false end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging2 and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart2
+            mainFrame.Position = UDim2.new(startPos2.X.Scale, startPos2.X.Offset + delta.X, startPos2.Y.Scale, startPos2.Y.Offset + delta.Y)
+        end
+    end)
+
+    local contentFrame = Instance.new("Frame", mainFrame)
+    contentFrame.Size = UDim2.new(1, 0, 1, -40)
+    contentFrame.Position = UDim2.new(0, 0, 0, 40)
+    contentFrame.BackgroundTransparency = 1
+
+    local layout2 = Instance.new("UIListLayout", contentFrame)
+    layout2.SortOrder = Enum.SortOrder.LayoutOrder
+    layout2.Padding = UDim.new(0, 12)
+    layout2.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+    local padding = Instance.new("UIPadding", contentFrame)
+    padding.PaddingTop = UDim.new(0, 12)
+    padding.PaddingBottom = UDim.new(0, 12)
+    padding.PaddingLeft = UDim.new(0, 14)
+    padding.PaddingRight = UDim.new(0, 14)
+
+    -- 1. SELEKTOR WYŚCIGU
+    local raceSection = Instance.new("Frame", contentFrame)
+    raceSection.Size = UDim2.new(1, 0, 0, 52)
+    raceSection.BackgroundTransparency = 1
+    raceSection.LayoutOrder = 1
+
+    local raceSectionTitle = Instance.new("TextLabel", raceSection)
+    raceSectionTitle.Size = UDim2.new(1, 0, 0, 14)
+    raceSectionTitle.BackgroundTransparency = 1
+    raceSectionTitle.Font = Theme.MainFont
+    raceSectionTitle.TextSize = 12
+    raceSectionTitle.TextColor3 = Theme.TextSecondary
+    raceSectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+    raceSectionTitle.Text = "SELECT RACE"
+
+    local raceSelectorBox = Instance.new("Frame", raceSection)
+    raceSelectorBox.Size = UDim2.new(1, 0, 0, 34)
+    raceSelectorBox.Position = UDim2.new(0, 0, 0, 18)
+    raceSelectorBox.BackgroundColor3 = Theme.Panel
+
+    local selectorCorner = Instance.new("UICorner", raceSelectorBox)
+    selectorCorner.CornerRadius = UDim.new(0, 8)
+
+    local rStroke = Instance.new("UIStroke", raceSelectorBox)
+    rStroke.Color = Color3.fromRGB(255, 255, 255)
+    rStroke.Transparency = 0.9
+
+    local prevBtn = Instance.new("TextButton", raceSelectorBox)
+    prevBtn.Size = UDim2.new(0, 34, 1, 0)
+    prevBtn.BackgroundTransparency = 1
+    prevBtn.Text = "<"
+    prevBtn.Font = Theme.MainFont
+    prevBtn.TextColor3 = Theme.Accent2
+    prevBtn.TextSize = 18
+
+    local nextBtn = Instance.new("TextButton", raceSelectorBox)
+    nextBtn.Size = UDim2.new(0, 34, 1, 0)
+    nextBtn.Position = UDim2.new(1, -34, 0, 0)
+    nextBtn.BackgroundTransparency = 1
+    nextBtn.Text = ">"
+    nextBtn.Font = Theme.MainFont
+    nextBtn.TextColor3 = Theme.Accent2
+    nextBtn.TextSize = 18
+
+    local raceNameLabel = Instance.new("TextLabel", raceSelectorBox)
+    raceNameLabel.Size = UDim2.new(1, -68, 1, 0)
+    raceNameLabel.Position = UDim2.new(0, 34, 0, 0)
+    raceNameLabel.BackgroundTransparency = 1
+    raceNameLabel.Font = Theme.MainFont
+    raceNameLabel.TextColor3 = Theme.TextPrimary
+    raceNameLabel.TextSize = 13
+    raceNameLabel.Text = RACES[config.selectedRaceIndex].name
+
+    local function updateRaceDisplay()
+        TweenService:Create(raceNameLabel, animFast, {TextTransparency = 1}):Play()
+        task.wait(0.1)
+        raceNameLabel.Text = RACES[config.selectedRaceIndex].name
+        TweenService:Create(raceNameLabel, animFast, {TextTransparency = 0}):Play()
+    end
+
+    prevBtn.MouseButton1Click:Connect(function()
+        if config.isToggled then return end
+        config.selectedRaceIndex = (config.selectedRaceIndex > 1) and (config.selectedRaceIndex - 1) or #RACES
+        updateRaceDisplay()
+    end)
+
+    nextBtn.MouseButton1Click:Connect(function()
+        if config.isToggled then return end
+        config.selectedRaceIndex = (config.selectedRaceIndex < #RACES) and (config.selectedRaceIndex + 1) or 1
+        updateRaceDisplay()
+    end)
+
+    -- 2. SLIDERY
+    local function createSlider(title, min, max, default, formatFunc, layoutOrder)
+        local section = Instance.new("Frame", contentFrame)
+        section.Size = UDim2.new(1, 0, 0, 42)
+        section.BackgroundTransparency = 1
+        section.LayoutOrder = layoutOrder
+
+        local titleLbl = Instance.new("TextLabel", section)
+        titleLbl.Size = UDim2.new(0.5, 0, 0, 14)
+        titleLbl.BackgroundTransparency = 1
+        titleLbl.Font = Theme.MainFont
+        titleLbl.TextColor3 = Theme.TextSecondary
+        titleLbl.TextSize = 12
+        titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+        titleLbl.Text = title
+
+        local valueLbl = Instance.new("TextLabel", section)
+        valueLbl.Size = UDim2.new(0.5, 0, 0, 14)
+        valueLbl.Position = UDim2.new(0.5, 0, 0, 0)
+        valueLbl.BackgroundTransparency = 1
+        valueLbl.Font = Theme.MainFont
+        valueLbl.TextColor3 = Theme.TextPrimary
+        valueLbl.TextSize = 12
+        valueLbl.TextXAlignment = Enum.TextXAlignment.Right
+        valueLbl.Text = formatFunc(default)
+
+        local sliderBg = Instance.new("TextButton", section)
+        sliderBg.Size = UDim2.new(1, 0, 0, 6)
+        sliderBg.Position = UDim2.new(0, 0, 0, 24)
+        sliderBg.BackgroundColor3 = Theme.Panel
+        sliderBg.Text = ""
+        sliderBg.AutoButtonColor = false
+
+        local bgCorner = Instance.new("UICorner", sliderBg)
+        bgCorner.CornerRadius = UDim.new(1, 0)
+
+        local sStroke = Instance.new("UIStroke", sliderBg)
+        sStroke.Color = Color3.fromRGB(255, 255, 255)
+        sStroke.Transparency = 0.9
+
+        local fill = Instance.new("Frame", sliderBg)
+        fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+        fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        fill.BorderSizePixel = 0
+
+        local fillCorner = Instance.new("UICorner", fill)
+        fillCorner.CornerRadius = UDim.new(1, 0)
+
+        local grad = Instance.new("UIGradient", fill)
+        grad.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, Theme.Accent2),
+            ColorSequenceKeypoint.new(1, Theme.Accent1)
+        }
+
+        local isDragging = false
+        local function update(input)
+            local pct = math.clamp((input.Position.X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X, 0, 1)
+            TweenService:Create(fill, animFast, {Size = UDim2.new(pct, 0, 1, 0)}):Play()
+            local val = math.floor(min + (max - min) * pct + 0.5)
+            valueLbl.Text = formatFunc(val)
+            return val
+        end
+
+        sliderBg.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                isDragging = true
+                return update(input)
+            end
+        end)
+
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                isDragging = false
+            end
+        end)
+
+        return {
+            bg = sliderBg,
+            updateFunc = update,
+            getDragging = function() return isDragging end
+        }
+    end
+
+    local speedSlider = createSlider("FLY SPEED", config.minSpeed, config.maxSpeed, config.flySpeed, function(v) return tostring(v) end, 2)
+    local lapSlider = createSlider("LAPS TARGET", config.minLaps, config.maxLaps, config.targetLaps, function(v) return v == 0 and "INFINITE" or tostring(v) end, 3)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if speedSlider.getDragging() then config.flySpeed = speedSlider.updateFunc(input) end
+            if lapSlider.getDragging() then config.targetLaps = lapSlider.updateFunc(input) end
+        end
+    end)
+
+    -- 3. TOGGLE DELAY
+    local delayBtn = Instance.new("TextButton", contentFrame)
+    delayBtn.Size = UDim2.new(1, 0, 0, 36)
+    delayBtn.BackgroundColor3 = Theme.Panel
+    delayBtn.Font = Theme.MainFont
+    delayBtn.TextSize = 13
+    delayBtn.TextColor3 = Theme.TextSecondary
+    delayBtn.Text = "Loop Wait (15s): OFF"
+    delayBtn.AutoButtonColor = false
+    delayBtn.LayoutOrder = 4
+
+    local delayCorner = Instance.new("UICorner", delayBtn)
+    delayCorner.CornerRadius = UDim.new(0, 8)
+
+    local delayStroke = Instance.new("UIStroke", delayBtn)
+    delayStroke.Color = Color3.fromRGB(255, 255, 255)
+    delayStroke.Transparency = 0.9
+
+    createButtonAnim(delayBtn)
+
+    delayBtn.MouseButton1Click:Connect(function()
+        config.isDelayEnabled = not config.isDelayEnabled
+        if config.isDelayEnabled then
+            delayBtn.Text = "Loop Wait (15s): ON"
+            TweenService:Create(delayBtn, animFast, {BackgroundColor3 = Color3.fromRGB(35, 120, 60), TextColor3 = Theme.TextPrimary}):Play()
+        else
+            delayBtn.Text = "Loop Wait (15s): OFF"
+            TweenService:Create(delayBtn, animFast, {BackgroundColor3 = Theme.Panel, TextColor3 = Theme.TextSecondary}):Play()
+        end
+    end)
+
+    -- 4. START BUTTON
+    local startBtn = Instance.new("TextButton", contentFrame)
+    startBtn.Size = UDim2.new(1, 0, 0, 44)
+    startBtn.BackgroundTransparency = 1
+    startBtn.Text = ""
+    startBtn.AutoButtonColor = false
+    startBtn.LayoutOrder = 5
+
+    local btnBackground = Instance.new("Frame", startBtn)
+    btnBackground.Size = UDim2.new(1, 0, 1, 0)
+    btnBackground.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    btnBackground.BorderSizePixel = 0
+
+    local startCorner = Instance.new("UICorner", btnBackground)
+    startCorner.CornerRadius = UDim.new(0, 10)
+
+    local btnGradient = Instance.new("UIGradient", btnBackground)
+    btnGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Theme.Accent2),
+        ColorSequenceKeypoint.new(1, Theme.Accent1)
+    }
+
+    local startBtnLabel = Instance.new("TextLabel", startBtn)
+    startBtnLabel.Size = UDim2.new(1, 0, 1, 0)
+    startBtnLabel.BackgroundTransparency = 1
+    startBtnLabel.Font = Theme.MainFont
+    startBtnLabel.TextSize = 15
+    startBtnLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    startBtnLabel.Text = "START AUTOFARM"
+    startBtnLabel.ZIndex = 3
+
+    local labelStroke = Instance.new("UIStroke", startBtnLabel)
+    labelStroke.Color = Color3.fromRGB(0, 0, 0)
+    labelStroke.Thickness = 1.5
+    labelStroke.Transparency = 0.5
+
+    createButtonAnim(startBtn)
+
+    -- FOOTER
+    local footer = Instance.new("TextLabel", contentFrame)
+    footer.Size = UDim2.new(1, 0, 0, 16)
+    footer.BackgroundTransparency = 1
+    footer.Font = Theme.MainFont
+    footer.TextSize = 11
+    footer.TextColor3 = Theme.TextSecondary
+    footer.Text = "MADE BY L8LY4U | AURORA HUB"
+    footer.LayoutOrder = 6
+
+    -- LOGIKA JAZDY
+    local function enableNoclip()
+        if noclipConnection then noclipConnection:Disconnect() end
+        noclipConnection = RunService.Stepped:Connect(function()
+            local character = player.Character
+            if character then
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+            end
+        end)
+    end
+
+    local function disableNoclip()
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+    end
+
+    local function stopDriving()
+        disableNoclip()
+        if flyMover then flyMover:Destroy() flyMover = nil end
+        if flyGyro then flyGyro:Destroy() flyGyro = nil end
+        local character = player.Character
+        local hrp = character and character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local rp = hrp.AssemblyRootPart or hrp
+            rp.AssemblyLinearVelocity = Vector3.zero
+            rp.AssemblyAngularVelocity = Vector3.zero
+        end
+    end
+
+    local function startDriving()
+        task.spawn(function()
+            enableNoclip()
+            while config.isToggled do
+                local race = RACES[config.selectedRaceIndex]
+                local raceDir = racesFolder:FindFirstChild(race.folder)
+                local checkpointsFolder = raceDir and raceDir:FindFirstChild("Checkpoints")
+
+                if not checkpointsFolder then
+                    warn("Nie znaleziono checkpointów dla: " .. race.folder)
+                    config.isToggled = false
+                    break
+                end
+
+                local currentLap = 0
+
+                while config.isToggled do
+                    if config.targetLaps > 0 and currentLap >= config.targetLaps then break end
+
+                    local character = player.Character
+                    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+                    if not hrp then config.isToggled = false break end
+
+                    local rootPart = hrp.AssemblyRootPart or hrp
+
+                    if not flyMover or not flyMover.Parent then
+                        flyMover = Instance.new("BodyVelocity")
+                        flyMover.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+                        flyMover.Velocity = Vector3.zero
+                        flyMover.Parent = rootPart
+                    end
+
+                    if not flyGyro or not flyGyro.Parent then
+                        flyGyro = Instance.new("BodyGyro")
+                        flyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+                        flyGyro.P = 3000
+                        flyGyro.D = 500
+                        flyGyro.CFrame = rootPart.CFrame
+                        flyGyro.Parent = rootPart
+                    end
+
+                    currentLap = currentLap + 1
+
+                    for _, cpNum in ipairs(race.checkpoints) do
+                        if not config.isToggled then break end
+                        local checkpoint = checkpointsFolder:FindFirstChild(tostring(cpNum))
+                        if checkpoint then
+                            local reached = false
+                            while not reached and config.isToggled do
+                                RunService.Heartbeat:Wait()
+                                if not rootPart or not rootPart.Parent then config.isToggled = false break end
+
+                                local currentPos = rootPart.Position
+                                local targetPos = checkpoint.Position + Vector3.new(0, config.heightOffset, 0)
+                                local distance = (targetPos - currentPos).Magnitude
+
+                                if distance < 15 then
+                                    reached = true
+                                    task.wait(0.05)
+                                    if race.specialAfter and race.specialAfter[cpNum] then
+                                        local spec = race.specialAfter[cpNum]
+                                        local prevCp = checkpointsFolder:FindFirstChild(tostring(spec.fromPrev))
+                                        if prevCp then
+                                            local fwdDir = (checkpoint.Position - prevCp.Position).Unit
+                                            local clearTarget = checkpoint.Position + (fwdDir * spec.extraDist) + Vector3.new(0, config.heightOffset, 0)
+                                            local cleared = false
+                                            while not cleared and config.isToggled do
+                                                RunService.Heartbeat:Wait()
+                                                if not rootPart or not rootPart.Parent then config.isToggled = false break end
+                                                local dist2 = (clearTarget - rootPart.Position).Magnitude
+                                                if dist2 < 20 then
+                                                    cleared = true
+                                                else
+                                                    flyMover.Velocity = (clearTarget - rootPart.Position).Unit * config.flySpeed
+                                                    flyGyro.CFrame = CFrame.new(rootPart.Position, clearTarget)
+                                                end
+                                            end
+                                        end
+                                    end
+                                else
+                                    flyMover.Velocity = (targetPos - currentPos).Unit * config.flySpeed
+                                    flyGyro.CFrame = CFrame.new(currentPos, targetPos)
+                                end
+                            end
+                        end
+                    end
+
+                    if not config.isToggled then break end
+                end
+
+                stopDriving()
+
+                if config.isToggled and config.isDelayEnabled then
+                    local timer = 0
+                    while config.isToggled and timer < 15 do
+                        task.wait(0.1)
+                        timer = timer + 0.1
+                    end
+                else
+                    break
+                end
+            end
+
+            config.isToggled = false
+            startBtnLabel.Text = "START AUTOFARM"
+            btnGradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Theme.Accent2),
+                ColorSequenceKeypoint.new(1, Theme.Accent1)
+            }
+            stopDriving()
+        end)
+    end
+
+    startBtn.MouseButton1Click:Connect(function()
+        config.isToggled = not config.isToggled
+        if config.isToggled then
+            startBtnLabel.Text = "STOP AUTOFARM"
+            btnGradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Theme.Danger),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 30, 50))
+            }
+            startDriving()
+        else
+            startBtnLabel.Text = "START AUTOFARM"
+            btnGradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0, Theme.Accent2),
+                ColorSequenceKeypoint.new(1, Theme.Accent1)
+            }
+            stopDriving()
+        end
+    end)
+end
+
+-- Weryfikacja wpisanego klucza
+submitBtn.MouseButton1Click:Connect(function()
+    if keyInputBox.Text == CORRECT_KEY then
+        statusLabel.TextColor3 = Theme.Success
+        statusLabel.Text = "Correct Key! Loading..."
+        task.wait(1)
+        loadMainScript()
+    else
+        statusLabel.TextColor3 = Theme.Danger
+        statusLabel.Text = "Invalid Key! Try again."
+        
+        -- Animacja "szejka" (trzęsienie ramki przy błędzie)
+        local originalPos = keyFrame.Position
+        for i = 1, 5 do
+            keyFrame.Position = originalPos + UDim2.new(0, (i % 2 == 0 and 5 or -5), 0, 0)
+            task.wait(0.04)
+        end
+        keyFrame.Position = originalPos
+    end
+end)
