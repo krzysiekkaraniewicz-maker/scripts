@@ -370,7 +370,7 @@ local function loadMainScript()
 
     local config = {
         minSpeed = 100, maxSpeed = 1500, flySpeed = 100,
-        minLaps = 0, maxLaps = 10, targetLaps = 0,
+        minLaps = 0, maxLaps = 50, targetLaps = 0,
         heightOffset = 10, isToggled = false, isDelayEnabled = false,
         selectedRaceIndex = 1,
     }
