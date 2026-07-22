@@ -8,7 +8,7 @@ local player = Players.LocalPlayer
 -- ==========================================
 -- KONFIGURACJA KEY SYSTEMU
 -- ==========================================
-local CORRECT_KEY = "Aurora123"
+local CORRECT_KEY = "Aurora"
 local DISCORD_LINK = "https://discord.gg/BGk6XwEZY"
 
 -- ==========================================
