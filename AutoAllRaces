@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
@@ -29,10 +30,109 @@ local Theme = {
 local animFast = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 local animSpring = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 
--- Czyszczenie starych GUI
-for _, gui in ipairs({CoreGui, player:WaitForChild("PlayerGui")}) do
-    if gui:FindFirstChild("AuroraKeyGUI") then gui:FindFirstChild("AuroraKeyGUI"):Destroy() end
-    if gui:FindFirstChild("AuroraRaceGUI") then gui:FindFirstChild("AuroraRaceGUI"):Destroy() end
+-- ==========================================
+-- FUNKCJE POMOCNICZE ANIMACJI
+-- ==========================================
+local function playShakeAnimation(frame, intensity, duration, shakes)
+    local originalPos = frame.Position
+    local shakeSteps = shakes or 6
+    local stepTime = duration / shakeSteps
+    
+    for i = 1, shakeSteps do
+        local offsetX = (i % 2 == 1 and intensity or -intensity) * (1 - (i / shakeSteps) * 0.7)
+        local offsetY = math.random(-1, 1) * (intensity * 0.3) * (1 - (i / shakeSteps) * 0.7)
+        local stepPos = originalPos + UDim2.new(0, offsetX, 0, offsetY)
+        
+        task.delay((i - 1) * stepTime, function()
+            TweenService:Create(frame, TweenInfo.new(stepTime * 0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Position = stepPos}):Play()
+        end)
+    end
+    
+    task.delay(shakeSteps * stepTime, function()
+        TweenService:Create(frame, TweenInfo.new(stepTime, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = originalPos}):Play()
+    end)
+end
+
+local function staggerEntrance(container, duration, offset)
+    local children = {}
+    for _, child in ipairs(container:GetChildren()) do
+        if child:IsA("GuiObject") and child.Visible then
+            table.insert(children, child)
+        end
+    end
+    
+    for i, child in ipairs(children) do
+        local origTransparency = child.BackgroundTransparency
+        child.BackgroundTransparency = 1
+        
+        if child:IsA("TextLabel") or child:IsA("TextBox") or child:IsA("TextButton") then
+            child.TextTransparency = 1
+        end
+        
+        task.delay((i - 1) * (offset or 0.05), function()
+            if not child or not child.Parent then return end
+            local tweenInfo = TweenInfo.new(duration or 0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+            local props = {BackgroundTransparency = origTransparency}
+            
+            if child:IsA("TextLabel") or child:IsA("TextBox") or child:IsA("TextButton") then
+                props.TextTransparency = 0
+            end
+            
+            local originalPos = child.Position
+            child.Position = originalPos + UDim2.new(0, 0, 0, 8)
+            props.Position = originalPos
+            
+            TweenService:Create(child, tweenInfo, props):Play()
+        end)
+    end
+end
+
+local function fadeOutAndDestroy(guiObject, duration, callback)
+    local children = guiObject:GetDescendants()
+    local maxDelay = 0
+    
+    for _, child in ipairs(children) do
+        if child:IsA("GuiObject") and child.Visible then
+            local delay = math.random() * 0.15
+            maxDelay = math.max(maxDelay, delay + (duration or 0.3))
+            local tweenInfo = TweenInfo.new(duration or 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In)
+            local props = {BackgroundTransparency = 1}
+            
+            if child:IsA("TextLabel") or child:IsA("TextBox") or child:IsA("TextButton") then
+                props.TextTransparency = 1
+            end
+            
+            task.delay(delay, function()
+                if child and child.Parent then
+                    TweenService:Create(child, tweenInfo, props):Play()
+                end
+            end)
+        end
+    end
+    
+    local mainScale = guiObject:FindFirstChildWhichIsA("UIScale")
+    if mainScale then
+        task.delay(maxDelay * 0.5, function()
+            if mainScale and mainScale.Parent then
+                TweenService:Create(mainScale, TweenInfo.new(duration or 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Scale = 0}):Play()
+            end
+        end)
+    end
+    
+    task.delay(maxDelay + (duration or 0.3) + 0.1, function()
+        if guiObject and guiObject.Parent then
+            guiObject:Destroy()
+        end
+        if callback then callback() end
+    end)
+end
+
+local function createButtonAnim(btn)
+    local scale = Instance.new("UIScale", btn)
+    btn.MouseEnter:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
+    btn.MouseLeave:Connect(function() TweenService:Create(scale, animFast, {Scale = 1}):Play() end)
+    btn.MouseButton1Down:Connect(function() TweenService:Create(scale, animFast, {Scale = 0.94}):Play() end)
+    btn.MouseButton1Up:Connect(function() TweenService:Create(scale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.02}):Play() end)
 end
 
 -- ==========================================
@@ -144,15 +244,6 @@ local inputStroke = Instance.new("UIStroke", keyInputBox)
 inputStroke.Color = Color3.fromRGB(255, 255, 255)
 inputStroke.Transparency = 0.9
 
--- Funkcja animacji przycisków
-local function createButtonAnim(btn)
-    local scale = Instance.new("UIScale", btn)
-    btn.MouseEnter:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
-    btn.MouseLeave:Connect(function() TweenService:Create(scale, animFast, {Scale = 1}):Play() end)
-    btn.MouseButton1Down:Connect(function() TweenService:Create(scale, animFast, {Scale = 0.95}):Play() end)
-    btn.MouseButton1Up:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
-end
-
 -- Przycisk Submit Key
 local submitBtn = Instance.new("TextButton", content)
 submitBtn.Size = UDim2.new(1, 0, 0, 40)
@@ -175,7 +266,7 @@ submitGrad.Color = ColorSequence.new{
 
 createButtonAnim(submitBtn)
 
--- Przycisk Get Key (Kopiowanie Discorda)
+-- Przycisk Get Key
 local getKeyBtn = Instance.new("TextButton", content)
 getKeyBtn.Size = UDim2.new(1, 0, 0, 36)
 getKeyBtn.BackgroundColor3 = Theme.Panel
@@ -215,119 +306,72 @@ getKeyBtn.MouseButton1Click:Connect(function()
         toclipboard(DISCORD_LINK)
     end
     
+    statusLabel.TextTransparency = 1
     statusLabel.TextColor3 = Theme.Accent2
     statusLabel.Text = "Copied Discord link to clipboard!"
+    TweenService:Create(statusLabel, animFast, {TextTransparency = 0}):Play()
     task.wait(2.5)
+    TweenService:Create(statusLabel, animFast, {TextTransparency = 1}):Play()
+    task.wait(0.2)
     statusLabel.TextColor3 = Theme.TextSecondary
     statusLabel.Text = "Join Discord to get the key"
+    TweenService:Create(statusLabel, animFast, {TextTransparency = 0}):Play()
 end)
 
 local function loadMainScript()
-    -- Animacja zamknięcia Key Systemu
-    TweenService:Create(mainScale, animSpring, {Scale = 0}):Play()
-    task.wait(0.4)
-    keyGui:Destroy()
+    -- ==========================================
+    -- ZMIENNE
+    -- ==========================================
+    local sessionStartTime = 0
+    local isRunning = false
+    
+    local function formatTime(seconds)
+        local secs = math.floor(seconds % 60)
+        local mins = math.floor((seconds / 60) % 60)
+        local hrs = math.floor(seconds / 3600)
+        return string.format("%02d:%02d:%02d", hrs, mins, secs)
+    end
+    
+    local function formatNumber(n)
+        if n >= 1000000 then
+            return string.format("%.1fM", n / 1000000)
+        elseif n >= 1000 then
+            return string.format("%.1fK", n / 1000)
+        else
+            return string.format("%.1f", n)
+        end
+    end
+    
+    -- ==========================================
+    -- ANIMACJA ZAMKNIĘCIA KEY SYSTEMU
+    -- ==========================================
+    fadeOutAndDestroy(keyGui, 0.25)
+    task.wait(0.6)
 
     -- ==========================================
-    -- GŁÓWNY KOD SKRYPTU AUTOFARM
+    -- GŁÓWNY KOD AUTOFARM
     -- ==========================================
-    local RunService = game:GetService("RunService")
     local racesFolder = workspace:WaitForChild("Races")
 
     local RACES = {
-        {
-            name = "Miami City Circuit",
-            folder = "Miami City Circuit",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                31, 32, 33, 34, 35, 36, 37, 38
-            },
-            specialAfter = {
-                [27] = {fromPrev = 26, extraDist = 420}
-            }
-        },
-        {
-            name = "Air Race",
-            folder = "Air Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20},
-        },
-        {
-            name = "Around The Map",
-            folder = "Around The Map",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                31, 32, 33, 34
-            },
-        },
-        {
-            name = "Beach Dash",
-            folder = "Beach Dash",
-            checkpoints = {1, 2, 3, 4, 5, 6},
-        },
-        {
-            name = "Circuit Moto Race",
-            folder = "Circuit Moto Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21},
-        },
-        {
-            name = "Circuit Race",
-            folder = "Circuit Race",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28
-            },
-        },
-        {
-            name = "Desert Race",
-            folder = "Desert Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
-        },
-        {
-            name = "Drag Race",
-            folder = "Drag Race",
-            checkpoints = {1},
-        },
-        {
-            name = "Highway Race",
-            folder = "Highway Race",
-            checkpoints = {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30},
-        },
-        {
-            name = "Mountain Dash",
-            folder = "Mountain Dash",
-            checkpoints = {
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
-            },
-        },
-        {
-            name = "Offroad Race",
-            folder = "Offroad Race",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
-        },
-        {
-            name = "Tropical Dash",
-            folder = "Tropical Dash",
-            checkpoints = {1, 2, 3, 4, 5, 6, 7, 8},
-        },
+        {name = "Miami City Circuit", folder = "Miami City Circuit", checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38}, specialAfter = {[27] = {fromPrev = 26, extraDist = 420}}},
+        {name = "Air Race", folder = "Air Race", checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}},
+        {name = "Around The Map", folder = "Around The Map", checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34}},
+        {name = "Beach Dash", folder = "Beach Dash", checkpoints = {1,2,3,4,5,6}},
+        {name = "Circuit Moto Race", folder = "Circuit Moto Race", checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21}},
+        {name = "Circuit Race", folder = "Circuit Race", checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28}},
+        {name = "Desert Race", folder = "Desert Race", checkpoints = {1,2,3,4,5,6,7,8,9,10}},
+        {name = "Drag Race", folder = "Drag Race", checkpoints = {1}},
+        {name = "Highway Race", folder = "Highway Race", checkpoints = {11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30}},
+        {name = "Mountain Dash", folder = "Mountain Dash", checkpoints = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32}},
+        {name = "Offroad Race", folder = "Offroad Race", checkpoints = {1,2,3,4,5,6,7,8,9,10,11}},
+        {name = "Tropical Dash", folder = "Tropical Dash", checkpoints = {1,2,3,4,5,6,7,8}},
     }
 
     local config = {
-        minSpeed = 10,
-        maxSpeed = 3000,
-        flySpeed = 50,
-        minLaps = 0,
-        maxLaps = 5,
-        targetLaps = 0,
-        heightOffset = 10,
-        isToggled = false,
-        isDelayEnabled = false,
+        minSpeed = 100, maxSpeed = 1500, flySpeed = 100,
+        minLaps = 0, maxLaps = 10, targetLaps = 0,
+        heightOffset = 10, isToggled = false, isDelayEnabled = false,
         selectedRaceIndex = 1,
     }
 
@@ -343,7 +387,7 @@ local function loadMainScript()
     end
 
     local mainFrame = Instance.new("Frame")
-    mainFrame.Size = UDim2.new(0, 310, 0, 420)
+    mainFrame.Size = UDim2.new(0, 310, 0, 510)
     mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.BackgroundColor3 = Theme.Background
@@ -408,10 +452,66 @@ local function loadMainScript()
         end
     end)
 
+    -- ==========================================
+    -- TAB BAR
+    -- ==========================================
+    local tabBar = Instance.new("Frame", mainFrame)
+    tabBar.Size = UDim2.new(1, -14, 0, 32)
+    tabBar.Position = UDim2.new(0, 7, 0, 45)
+    tabBar.BackgroundTransparency = 1
+
+    local currentTab = "autofarm"
+
+    local tabAutofarmBtn = Instance.new("TextButton", tabBar)
+    tabAutofarmBtn.Size = UDim2.new(0.5, -3, 1, 0)
+    tabAutofarmBtn.Position = UDim2.new(0, 0, 0, 0)
+    tabAutofarmBtn.BackgroundColor3 = Theme.Accent1
+    tabAutofarmBtn.Font = Theme.MainFont
+    tabAutofarmBtn.TextSize = 13
+    tabAutofarmBtn.TextColor3 = Theme.TextPrimary
+    tabAutofarmBtn.Text = "AUTOFARM"
+    tabAutofarmBtn.AutoButtonColor = false
+
+    local tabAutofarmCorner = Instance.new("UICorner", tabAutofarmBtn)
+    tabAutofarmCorner.CornerRadius = UDim.new(0, 6)
+
+    local tabProfileBtn = Instance.new("TextButton", tabBar)
+    tabProfileBtn.Size = UDim2.new(0.5, -3, 1, 0)
+    tabProfileBtn.Position = UDim2.new(0.5, 3, 0, 0)
+    tabProfileBtn.BackgroundColor3 = Theme.Panel
+    tabProfileBtn.Font = Theme.MainFont
+    tabProfileBtn.TextSize = 13
+    tabProfileBtn.TextColor3 = Theme.TextSecondary
+    tabProfileBtn.Text = "PROFILE"
+    tabProfileBtn.AutoButtonColor = false
+
+    local tabProfileCorner = Instance.new("UICorner", tabProfileBtn)
+    tabProfileCorner.CornerRadius = UDim.new(0, 6)
+
+    tabAutofarmBtn.BackgroundTransparency = 1
+    tabAutofarmBtn.TextTransparency = 1
+    tabProfileBtn.BackgroundTransparency = 1
+    tabProfileBtn.TextTransparency = 1
+    task.delay(0.4, function()
+        if tabAutofarmBtn and tabAutofarmBtn.Parent then
+            TweenService:Create(tabAutofarmBtn, animFast, {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+        end
+        if tabProfileBtn and tabProfileBtn.Parent then
+            TweenService:Create(tabProfileBtn, animFast, {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+        end
+    end)
+
+    createButtonAnim(tabAutofarmBtn)
+    createButtonAnim(tabProfileBtn)
+
+    -- ==========================================
+    -- ZAWARTOŚĆ AUTOFARM
+    -- ==========================================
     local contentFrame = Instance.new("Frame", mainFrame)
-    contentFrame.Size = UDim2.new(1, 0, 1, -40)
-    contentFrame.Position = UDim2.new(0, 0, 0, 40)
+    contentFrame.Size = UDim2.new(1, 0, 1, -80)
+    contentFrame.Position = UDim2.new(0, 0, 0, 74)
     contentFrame.BackgroundTransparency = 1
+    contentFrame.Visible = true
 
     local layout2 = Instance.new("UIListLayout", contentFrame)
     layout2.SortOrder = Enum.SortOrder.LayoutOrder
@@ -424,7 +524,448 @@ local function loadMainScript()
     padding.PaddingLeft = UDim.new(0, 14)
     padding.PaddingRight = UDim.new(0, 14)
 
+    -- ==========================================
+    -- ZAWARTOŚĆ PROFILE (KALKULATOR)
+    -- ==========================================
+    local profileFrame = Instance.new("Frame", mainFrame)
+    profileFrame.Size = UDim2.new(1, 0, 1, -80)
+    profileFrame.Position = UDim2.new(0, 0, 0, 74)
+    profileFrame.BackgroundTransparency = 1
+    profileFrame.Visible = false
+
+    local profileLayout = Instance.new("UIListLayout", profileFrame)
+    profileLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    profileLayout.Padding = UDim.new(0, 8)
+    profileLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+    local profilePadding = Instance.new("UIPadding", profileFrame)
+    profilePadding.PaddingTop = UDim.new(0, 10)
+    profilePadding.PaddingBottom = UDim.new(0, 8)
+    profilePadding.PaddingLeft = UDim.new(0, 14)
+    profilePadding.PaddingRight = UDim.new(0, 14)
+
+    -- Avatar + Name
+    local topRow = Instance.new("Frame", profileFrame)
+    topRow.Size = UDim2.new(1, 0, 0, 50)
+    topRow.BackgroundTransparency = 1
+    topRow.LayoutOrder = 1
+
+    local avatarCircle = Instance.new("Frame", topRow)
+    avatarCircle.Size = UDim2.new(0, 50, 0, 50)
+    avatarCircle.BackgroundColor3 = Theme.Panel
+
+    local avatarCircleCorner = Instance.new("UICorner", avatarCircle)
+    avatarCircleCorner.CornerRadius = UDim.new(1, 0)
+
+    local avatarImg = Instance.new("ImageLabel", avatarCircle)
+    avatarImg.Size = UDim2.new(1, -4, 1, -4)
+    avatarImg.Position = UDim2.new(0, 2, 0, 2)
+    avatarImg.BackgroundTransparency = 1
+    avatarImg.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
+    avatarImg.ScaleType = Enum.ScaleType.Fit
+
+    local avatarImgCorner = Instance.new("UICorner", avatarImg)
+    avatarImgCorner.CornerRadius = UDim.new(1, 0)
+
+    local nameLabel = Instance.new("TextLabel", topRow)
+    nameLabel.Size = UDim2.new(1, -60, 1, 0)
+    nameLabel.Position = UDim2.new(0, 58, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Font = Theme.MainFont
+    nameLabel.TextSize = 16
+    nameLabel.TextColor3 = Theme.TextPrimary
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.Text = player.DisplayName or player.Name
+
+    -- Status
+    local statusRow = Instance.new("Frame", profileFrame)
+    statusRow.Size = UDim2.new(1, 0, 0, 24)
+    statusRow.BackgroundColor3 = Theme.Panel
+    statusRow.LayoutOrder = 2
+
+    local statusRowCorner = Instance.new("UICorner", statusRow)
+    statusRowCorner.CornerRadius = UDim.new(0, 8)
+
+    local statusDot = Instance.new("Frame", statusRow)
+    statusDot.Size = UDim2.new(0, 8, 0, 8)
+    statusDot.Position = UDim2.new(0, 10, 0.5, -4)
+    statusDot.BackgroundColor3 = Theme.TextSecondary
+    statusDot.BorderSizePixel = 0
+
+    local statusDotCorner = Instance.new("UICorner", statusDot)
+    statusDotCorner.CornerRadius = UDim.new(1, 0)
+
+    local statusText = Instance.new("TextLabel", statusRow)
+    statusText.Size = UDim2.new(1, -24, 1, 0)
+    statusText.Position = UDim2.new(0, 22, 0, 0)
+    statusText.BackgroundTransparency = 1
+    statusText.Font = Theme.MainFont
+    statusText.TextSize = 12
+    statusText.TextColor3 = Theme.TextSecondary
+    statusText.TextXAlignment = Enum.TextXAlignment.Left
+    statusText.Text = "Status: Stopped"
+
+    -- Timer
+    local timerContainer = Instance.new("Frame", profileFrame)
+    timerContainer.Size = UDim2.new(1, 0, 0, 36)
+    timerContainer.BackgroundColor3 = Theme.Panel
+    timerContainer.LayoutOrder = 3
+
+    local timerContainerCorner = Instance.new("UICorner", timerContainer)
+    timerContainerCorner.CornerRadius = UDim.new(0, 8)
+
+    local timerLabel = Instance.new("TextLabel", timerContainer)
+    timerLabel.Size = UDim2.new(1, -14, 0, 16)
+    timerLabel.Position = UDim2.new(0, 14, 0, 4)
+    timerLabel.BackgroundTransparency = 1
+    timerLabel.Font = Theme.MainFont
+    timerLabel.TextSize = 11
+    timerLabel.TextColor3 = Theme.TextSecondary
+    timerLabel.TextXAlignment = Enum.TextXAlignment.Left
+    timerLabel.Text = "Session Time"
+
+    local timerValue = Instance.new("TextLabel", timerContainer)
+    timerValue.Size = UDim2.new(1, -14, 0, 16)
+    timerValue.Position = UDim2.new(0, 14, 0, 18)
+    timerValue.BackgroundTransparency = 1
+    timerValue.Font = Theme.MainFont
+    timerValue.TextSize = 13
+    timerValue.TextColor3 = Theme.TextPrimary
+    timerValue.TextXAlignment = Enum.TextXAlignment.Left
+    timerValue.Text = "00:00:00"
+
+    -- ==========================================
+    -- KALKULATOR ZAROBKU
+    -- ==========================================
+    local calcHeader = Instance.new("TextLabel", profileFrame)
+    calcHeader.Size = UDim2.new(1, 0, 0, 16)
+    calcHeader.BackgroundTransparency = 1
+    calcHeader.Font = Theme.MainFont
+    calcHeader.TextSize = 12
+    calcHeader.TextColor3 = Theme.TextSecondary
+    calcHeader.TextXAlignment = Enum.TextXAlignment.Left
+    calcHeader.Text = "EARNINGS CALCULATOR"
+    calcHeader.LayoutOrder = 4
+
+    -- Input: Czas w sekundach
+    local timeRow = Instance.new("Frame", profileFrame)
+    timeRow.Size = UDim2.new(1, 0, 0, 36)
+    timeRow.BackgroundColor3 = Theme.Panel
+    timeRow.LayoutOrder = 5
+
+    local timeRowCorner = Instance.new("UICorner", timeRow)
+    timeRowCorner.CornerRadius = UDim.new(0, 8)
+
+    local timeIcon = Instance.new("TextLabel", timeRow)
+    timeIcon.Size = UDim2.new(0, 40, 1, 0)
+    timeIcon.BackgroundTransparency = 1
+    timeIcon.Font = Theme.MainFont
+    timeIcon.TextSize = 14
+    timeIcon.TextColor3 = Theme.Accent2
+    timeIcon.Text = "⏱"
+    timeIcon.LayoutOrder = 1
+
+    local timeInput = Instance.new("TextBox", timeRow)
+    timeInput.Size = UDim2.new(1, -100, 1, 0)
+    timeInput.Position = UDim2.new(0, 40, 0, 0)
+    timeInput.BackgroundTransparency = 1
+    timeInput.Font = Theme.MainFont
+    timeInput.TextSize = 13
+    timeInput.TextColor3 = Theme.TextPrimary
+    timeInput.PlaceholderText = "Czas (sekundy)..."
+    timeInput.PlaceholderColor3 = Theme.TextSecondary
+    timeInput.Text = ""
+    timeInput.ClearTextOnFocus = false
+
+    local timeUnit = Instance.new("TextLabel", timeRow)
+    timeUnit.Size = UDim2.new(0, 56, 1, 0)
+    timeUnit.Position = UDim2.new(1, -56, 0, 0)
+    timeUnit.BackgroundTransparency = 1
+    timeUnit.Font = Theme.MainFont
+    timeUnit.TextSize = 12
+    timeUnit.TextColor3 = Theme.TextSecondary
+    timeUnit.Text = "sec"
+
+    -- Input: Zarobek
+    local earnRow = Instance.new("Frame", profileFrame)
+    earnRow.Size = UDim2.new(1, 0, 0, 36)
+    earnRow.BackgroundColor3 = Theme.Panel
+    earnRow.LayoutOrder = 6
+
+    local earnRowCorner = Instance.new("UICorner", earnRow)
+    earnRowCorner.CornerRadius = UDim.new(0, 8)
+
+    local earnIcon = Instance.new("TextLabel", earnRow)
+    earnIcon.Size = UDim2.new(0, 40, 1, 0)
+    earnIcon.BackgroundTransparency = 1
+    earnIcon.Font = Theme.MainFont
+    earnIcon.TextSize = 14
+    earnIcon.TextColor3 = Theme.Success
+    earnIcon.Text = "💰"
+    earnIcon.LayoutOrder = 1
+
+    local earnInput = Instance.new("TextBox", earnRow)
+    earnInput.Size = UDim2.new(1, -100, 1, 0)
+    earnInput.Position = UDim2.new(0, 40, 0, 0)
+    earnInput.BackgroundTransparency = 1
+    earnInput.Font = Theme.MainFont
+    earnInput.TextSize = 13
+    earnInput.TextColor3 = Theme.TextPrimary
+    earnInput.PlaceholderText = "Zarobek..."
+    earnInput.PlaceholderColor3 = Theme.TextSecondary
+    earnInput.Text = ""
+    earnInput.ClearTextOnFocus = false
+
+    local earnUnit = Instance.new("TextLabel", earnRow)
+    earnUnit.Size = UDim2.new(0, 56, 1, 0)
+    earnUnit.Position = UDim2.new(1, -56, 0, 0)
+    earnUnit.BackgroundTransparency = 1
+    earnUnit.Font = Theme.MainFont
+    earnUnit.TextSize = 12
+    earnUnit.TextColor3 = Theme.TextSecondary
+    earnUnit.Text = "credits"
+
+    -- Input: Mnożnik
+    local multRow = Instance.new("Frame", profileFrame)
+    multRow.Size = UDim2.new(1, 0, 0, 36)
+    multRow.BackgroundColor3 = Theme.Panel
+    multRow.LayoutOrder = 7
+
+    local multRowCorner = Instance.new("UICorner", multRow)
+    multRowCorner.CornerRadius = UDim.new(0, 8)
+
+    local multIcon = Instance.new("TextLabel", multRow)
+    multIcon.Size = UDim2.new(0, 40, 1, 0)
+    multIcon.BackgroundTransparency = 1
+    multIcon.Font = Theme.MainFont
+    multIcon.TextSize = 14
+    multIcon.TextColor3 = Theme.Accent1
+    multIcon.Text = "✕"
+    multIcon.LayoutOrder = 1
+
+    local multInput = Instance.new("TextBox", multRow)
+    multInput.Size = UDim2.new(1, -100, 1, 0)
+    multInput.Position = UDim2.new(0, 40, 0, 0)
+    multInput.BackgroundTransparency = 1
+    multInput.Font = Theme.MainFont
+    multInput.TextSize = 13
+    multInput.TextColor3 = Theme.TextPrimary
+    multInput.PlaceholderText = "Mnożnik..."
+    multInput.PlaceholderColor3 = Theme.TextSecondary
+    multInput.Text = ""
+    multInput.ClearTextOnFocus = false
+
+    local multUnit = Instance.new("TextLabel", multRow)
+    multUnit.Size = UDim2.new(0, 56, 1, 0)
+    multUnit.Position = UDim2.new(1, -56, 0, 0)
+    multUnit.BackgroundTransparency = 1
+    multUnit.Font = Theme.MainFont
+    multUnit.TextSize = 12
+    multUnit.TextColor3 = Theme.TextSecondary
+    multUnit.Text = "mult"
+
+    -- Wyniki kalkulatora
+    local resultContainer = Instance.new("Frame", profileFrame)
+    resultContainer.Size = UDim2.new(1, 0, 0, 82)
+    resultContainer.BackgroundColor3 = Theme.Panel
+    resultContainer.LayoutOrder = 8
+
+    local resultContainerCorner = Instance.new("UICorner", resultContainer)
+    resultContainerCorner.CornerRadius = UDim.new(0, 8)
+
+    local resultPerSec = Instance.new("TextLabel", resultContainer)
+    resultPerSec.Size = UDim2.new(1, -14, 0, 14)
+    resultPerSec.Position = UDim2.new(0, 14, 0, 2)
+    resultPerSec.BackgroundTransparency = 1
+    resultPerSec.Font = Theme.MainFont
+    resultPerSec.TextSize = 10
+    resultPerSec.TextColor3 = Theme.TextSecondary
+    resultPerSec.TextXAlignment = Enum.TextXAlignment.Left
+    resultPerSec.Text = "Raw: 0 cr/sec"
+
+    local resultPerHour = Instance.new("TextLabel", resultContainer)
+    resultPerHour.Size = UDim2.new(1, -14, 0, 18)
+    resultPerHour.Position = UDim2.new(0, 14, 0, 16)
+    resultPerHour.BackgroundTransparency = 1
+    resultPerHour.Font = Theme.MainFont
+    resultPerHour.TextSize = 14
+    resultPerHour.TextColor3 = Theme.Accent2
+    resultPerHour.TextXAlignment = Enum.TextXAlignment.Left
+    resultPerHour.Text = "0 cr/hr"
+
+    local result12h = Instance.new("TextLabel", resultContainer)
+    result12h.Size = UDim2.new(1, -14, 0, 16)
+    result12h.Position = UDim2.new(0, 14, 0, 36)
+    result12h.BackgroundTransparency = 1
+    result12h.Font = Theme.MainFont
+    result12h.TextSize = 12
+    result12h.TextColor3 = Theme.TextPrimary
+    result12h.TextXAlignment = Enum.TextXAlignment.Left
+    result12h.Text = "0 cr / 12h"
+
+    local result24h = Instance.new("TextLabel", resultContainer)
+    result24h.Size = UDim2.new(1, -14, 0, 16)
+    result24h.Position = UDim2.new(0, 14, 0, 52)
+    result24h.BackgroundTransparency = 1
+    result24h.Font = Theme.MainFont
+    result24h.TextSize = 12
+    result24h.TextColor3 = Theme.TextPrimary
+    result24h.TextXAlignment = Enum.TextXAlignment.Left
+    result24h.Text = "0 cr / 24h"
+
+    local resultMultInfo = Instance.new("TextLabel", resultContainer)
+    resultMultInfo.Size = UDim2.new(1, -14, 0, 16)
+    resultMultInfo.Position = UDim2.new(0, 14, 0, 68)
+    resultMultInfo.BackgroundTransparency = 1
+    resultMultInfo.Font = Theme.MainFont
+    resultMultInfo.TextSize = 11
+    resultMultInfo.TextColor3 = Theme.Success
+    resultMultInfo.TextXAlignment = Enum.TextXAlignment.Left
+    resultMultInfo.Text = "With mult: enter multiplier above"
+
+    -- Funkcja licząca
+    local function calculateEarnings()
+        local timeStr = timeInput.Text:gsub(",", ".")
+        local earnStr = earnInput.Text:gsub(",", ".")
+        local multStr = multInput.Text:gsub(",", ".")
+        
+        -- Support K/M notation in input
+        local function parseNumber(s)
+            s = s:upper():gsub(",", "")
+            local mult = 1
+            if s:find("K$") then mult = 1000; s = s:gsub("K$", "") end
+            if s:find("M$") then mult = 1000000; s = s:gsub("M$", "") end
+            local n = tonumber(s)
+            return n and n * mult or nil
+        end
+        
+        local seconds = tonumber(timeStr)
+        local earned = parseNumber(earnStr)
+        local mult = parseNumber(multStr)
+        
+        if not seconds or seconds <= 0 then
+            resultPerSec.Text = "Raw: 0 cr/sec"
+            resultPerHour.Text = "0 cr/hr"
+            result12h.Text = "0 cr / 12h"
+            result24h.Text = "0 cr / 24h"
+            resultMultInfo.Text = "Enter a valid time"
+            return
+        end
+        
+        if not earned or earned <= 0 then
+            resultPerSec.Text = "Raw: 0 cr/sec"
+            resultPerHour.Text = "0 cr/hr"
+            result12h.Text = "0 cr / 12h"
+            result24h.Text = "0 cr / 24h"
+            resultMultInfo.Text = "Enter a valid earned amount"
+            return
+        end
+        
+        local perSec = earned / seconds
+        local perHour = perSec * 3600
+        local per12h = perHour * 12
+        local per24h = perHour * 24
+        
+        local multValue = mult and mult > 0 and mult or 1
+        
+        resultPerSec.Text = string.format("Raw: %.1f cr/sec", perSec)
+        resultPerHour.Text = formatNumber(perHour) .. " cr/hr"
+        result12h.Text = formatNumber(per12h) .. " cr / 12h"
+        result24h.Text = formatNumber(per24h) .. " cr / 24h"
+        
+        if mult and mult > 0 and mult ~= 1 then
+            local perHourM = perHour * mult
+            local per12hM = per12h * mult
+            local per24hM = per24h * mult
+            resultMultInfo.Text = string.format("With %.1fx mult: %s/hr | %s/12h | %s/24h", mult, formatNumber(perHourM), formatNumber(per12hM), formatNumber(per24hM))
+        else
+            resultMultInfo.Text = "With mult: enter multiplier above (e.g. 1.5)"
+        end
+        
+        -- Animacja na cr/hr
+        TweenService:Create(resultPerHour, animFast, {TextColor3 = Theme.Accent2}):Play()
+        task.delay(0.3, function()
+            if resultPerHour and resultPerHour.Parent then
+                TweenService:Create(resultPerHour, animFast, {TextColor3 = Theme.Accent2}):Play()
+            end
+        end)
+    end
+
+    -- Eventy na zmianę inputu
+    timeInput.FocusLost:Connect(function() calculateEarnings() end)
+    earnInput.FocusLost:Connect(function() calculateEarnings() end)
+    multInput.FocusLost:Connect(function() calculateEarnings() end)
+    
+    timeInput.Focused:Connect(function() end)
+    earnInput.Focused:Connect(function() end)
+    multInput.Focused:Connect(function() end)
+
+    -- ==========================================
+    -- FUNKCJE PRZEŁĄCZANIA TABÓW
+    -- ==========================================
+    local function switchTab(tab)
+        if tab == currentTab then return end
+        currentTab = tab
+        
+        if tab == "autofarm" then
+            contentFrame.Visible = true
+            profileFrame.Visible = false
+            TweenService:Create(tabAutofarmBtn, animFast, {BackgroundColor3 = Theme.Accent1, TextColor3 = Theme.TextPrimary}):Play()
+            TweenService:Create(tabProfileBtn, animFast, {BackgroundColor3 = Theme.Panel, TextColor3 = Theme.TextSecondary}):Play()
+        else
+            contentFrame.Visible = false
+            profileFrame.Visible = true
+            TweenService:Create(tabProfileBtn, animFast, {BackgroundColor3 = Theme.Accent1, TextColor3 = Theme.TextPrimary}):Play()
+            TweenService:Create(tabAutofarmBtn, animFast, {BackgroundColor3 = Theme.Panel, TextColor3 = Theme.TextSecondary}):Play()
+            calculateEarnings()
+        end
+    end
+
+    tabAutofarmBtn.MouseButton1Click:Connect(function() switchTab("autofarm") end)
+    tabProfileBtn.MouseButton1Click:Connect(function() switchTab("profile") end)
+
+    task.delay(0.35, function()
+        if contentFrame and contentFrame.Parent then
+            staggerEntrance(contentFrame, 0.3, 0.04)
+        end
+    end)
+
+    -- ==========================================
+    -- TIMER
+    -- ==========================================
+    local timerConnection
+    local function startTimer()
+        sessionStartTime = tick()
+        isRunning = true
+        
+        TweenService:Create(statusDot, animFast, {BackgroundColor3 = Theme.Success}):Play()
+        statusText.Text = "Status: Running"
+        statusText.TextColor3 = Theme.Success
+        
+        if timerConnection then timerConnection:Disconnect() end
+        timerConnection = RunService.Heartbeat:Connect(function()
+            if not mainFrame or not mainFrame.Parent then
+                if timerConnection then timerConnection:Disconnect() end
+                return
+            end
+            local elapsed = tick() - sessionStartTime
+            timerValue.Text = formatTime(elapsed)
+        end)
+    end
+    
+    local function stopTimer()
+        isRunning = false
+        if timerConnection then timerConnection:Disconnect() timerConnection = nil end
+        
+        TweenService:Create(statusDot, animFast, {BackgroundColor3 = Theme.Danger}):Play()
+        statusText.Text = "Status: Stopped"
+        statusText.TextColor3 = Theme.Danger
+        stopAntiAfk()
+    end
+
+    -- ==========================================
     -- 1. SELEKTOR WYŚCIGU
+    -- ==========================================
     local raceSection = Instance.new("Frame", contentFrame)
     raceSection.Size = UDim2.new(1, 0, 0, 52)
     raceSection.BackgroundTransparency = 1
@@ -477,11 +1018,39 @@ local function loadMainScript()
     raceNameLabel.TextSize = 13
     raceNameLabel.Text = RACES[config.selectedRaceIndex].name
 
+    local function createArrowAnim(btn)
+        local scale = Instance.new("UIScale", btn)
+        btn.MouseEnter:Connect(function()
+            TweenService:Create(scale, animFast, {Scale = 1.2}):Play()
+            TweenService:Create(btn, animFast, {TextColor3 = Theme.TextPrimary}):Play()
+        end)
+        btn.MouseLeave:Connect(function()
+            TweenService:Create(scale, animFast, {Scale = 1}):Play()
+            TweenService:Create(btn, animFast, {TextColor3 = Theme.Accent2}):Play()
+        end)
+        btn.MouseButton1Down:Connect(function()
+            TweenService:Create(scale, animFast, {Scale = 0.9}):Play()
+        end)
+        btn.MouseButton1Up:Connect(function()
+            TweenService:Create(scale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.2}):Play()
+        end)
+    end
+    
+    createArrowAnim(prevBtn)
+    createArrowAnim(nextBtn)
+
     local function updateRaceDisplay()
-        TweenService:Create(raceNameLabel, animFast, {TextTransparency = 1}):Play()
-        task.wait(0.1)
+        TweenService:Create(raceNameLabel, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
+            TextTransparency = 1,
+            Position = UDim2.new(0, 34, 0, -5)
+        }):Play()
+        task.wait(0.12)
         raceNameLabel.Text = RACES[config.selectedRaceIndex].name
-        TweenService:Create(raceNameLabel, animFast, {TextTransparency = 0}):Play()
+        raceNameLabel.Position = UDim2.new(0, 34, 0, 5)
+        TweenService:Create(raceNameLabel, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            TextTransparency = 0,
+            Position = UDim2.new(0, 34, 0, 0)
+        }):Play()
     end
 
     prevBtn.MouseButton1Click:Connect(function()
@@ -572,11 +1141,7 @@ local function loadMainScript()
             end
         end)
 
-        return {
-            bg = sliderBg,
-            updateFunc = update,
-            getDragging = function() return isDragging end
-        }
+        return {bg = sliderBg, updateFunc = update, getDragging = function() return isDragging end}
     end
 
     local speedSlider = createSlider("FLY SPEED", config.minSpeed, config.maxSpeed, config.flySpeed, function(v) return tostring(v) end, 2)
@@ -658,7 +1223,6 @@ local function loadMainScript()
 
     createButtonAnim(startBtn)
 
-    -- FOOTER
     local footer = Instance.new("TextLabel", contentFrame)
     footer.Size = UDim2.new(1, 0, 0, 16)
     footer.BackgroundTransparency = 1
@@ -682,10 +1246,7 @@ local function loadMainScript()
     end
 
     local function disableNoclip()
-        if noclipConnection then
-            noclipConnection:Disconnect()
-            noclipConnection = nil
-        end
+        if noclipConnection then noclipConnection:Disconnect() noclipConnection = nil end
     end
 
     local function stopDriving()
@@ -822,6 +1383,7 @@ local function loadMainScript()
                 ColorSequenceKeypoint.new(0, Theme.Danger),
                 ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 30, 50))
             }
+            startTimer()
             startDriving()
         else
             startBtnLabel.Text = "START AUTOFARM"
@@ -829,12 +1391,15 @@ local function loadMainScript()
                 ColorSequenceKeypoint.new(0, Theme.Accent2),
                 ColorSequenceKeypoint.new(1, Theme.Accent1)
             }
+            stopTimer()
             stopDriving()
         end
     end)
 end
 
--- Weryfikacja wpisanego klucza
+-- ==========================================
+-- WERYFIKACJA KLUCZA
+-- ==========================================
 submitBtn.MouseButton1Click:Connect(function()
     if keyInputBox.Text == CORRECT_KEY then
         statusLabel.TextColor3 = Theme.Success
@@ -844,13 +1409,6 @@ submitBtn.MouseButton1Click:Connect(function()
     else
         statusLabel.TextColor3 = Theme.Danger
         statusLabel.Text = "Invalid Key! Try again."
-        
-        -- Animacja "szejka" (trzęsienie ramki przy błędzie)
-        local originalPos = keyFrame.Position
-        for i = 1, 5 do
-            keyFrame.Position = originalPos + UDim2.new(0, (i % 2 == 0 and 5 or -5), 0, 0)
-            task.wait(0.04)
-        end
-        keyFrame.Position = originalPos
+        playShakeAnimation(keyFrame, 8, 0.5, 7)
     end
 end)
