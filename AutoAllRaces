@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
@@ -28,6 +29,64 @@ local Theme = {
 
 local animFast = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
 local animSpring = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+local animSmooth = TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+
+-- ==========================================
+-- HELPERY ANIMACJI (nowe)
+-- ==========================================
+
+-- Efekt "ripple" (fala) przy kliknięciu przycisku
+local function rippleEffect(button)
+    button.ClipsDescendants = true
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            local ripple = Instance.new("Frame")
+            ripple.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            ripple.BackgroundTransparency = 0.6
+            ripple.BorderSizePixel = 0
+            ripple.AnchorPoint = Vector2.new(0.5, 0.5)
+            ripple.ZIndex = 10
+            ripple.Parent = button
+
+            local rc = Instance.new("UICorner", ripple)
+            rc.CornerRadius = UDim.new(1, 0)
+
+            local absPos = button.AbsolutePosition
+            local relX = input.Position.X - absPos.X
+            local relY = input.Position.Y - absPos.Y
+            ripple.Position = UDim2.new(0, relX, 0, relY)
+            ripple.Size = UDim2.new(0, 0, 0, 0)
+
+            local maxSize = math.max(button.AbsoluteSize.X, button.AbsoluteSize.Y) * 2
+            TweenService:Create(ripple, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, maxSize, 0, maxSize),
+                BackgroundTransparency = 1
+            }):Play()
+            task.wait(0.5)
+            ripple:Destroy()
+        end
+    end)
+end
+
+-- Animowane wejście elementów (fade + slide) ze staggerem
+local function animateEntrance(element, delay)
+    element.BackgroundTransparency = element.BackgroundTransparency
+    local origPos = element.Position
+    element.Position = origPos + UDim2.new(0, 0, 0, 15)
+    for _, d in ipairs(element:GetDescendants()) do
+        if d:IsA("TextLabel") or d:IsA("TextButton") or d:IsA("TextBox") then
+            d.TextTransparency = 1
+        end
+    end
+    task.delay(delay, function()
+        TweenService:Create(element, animSmooth, {Position = origPos}):Play()
+        for _, d in ipairs(element:GetDescendants()) do
+            if d:IsA("TextLabel") or d:IsA("TextButton") or d:IsA("TextBox") then
+                TweenService:Create(d, animSmooth, {TextTransparency = 0}):Play()
+            end
+        end
+    end)
+end
 
 -- Czyszczenie starych GUI
 for _, gui in ipairs({CoreGui, player:WaitForChild("PlayerGui")}) do
@@ -58,14 +117,32 @@ keyFrame.Parent = keyGui
 local frameCorner = Instance.new("UICorner", keyFrame)
 frameCorner.CornerRadius = UDim.new(0, 12)
 
-local mainStroke = Instance.new("UIStroke", keyFrame)
-mainStroke.Color = Color3.fromRGB(255, 255, 255)
-mainStroke.Thickness = 1
-mainStroke.Transparency = 0.9
+-- Animowany gradient tła ramki (subtelny żywy odcień)
+local bgGradient = Instance.new("UIGradient", keyFrame)
+bgGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 30)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 12, 18))
+}
+bgGradient.Rotation = 45
 
+local mainStroke = Instance.new("UIStroke", keyFrame)
+mainStroke.Color = Color3.fromRGB(120, 120, 255)
+mainStroke.Thickness = 1.4
+mainStroke.Transparency = 0.6
+
+-- Kolorowy gradient na obramowaniu + oddychający glow
+local strokeGradient = Instance.new("UIGradient", mainStroke)
+strokeGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Theme.Accent2),
+    ColorSequenceKeypoint.new(1, Theme.Accent1)
+}
+
+-- Czyste wejście: płynny fade + scale (bez obrotu)
 local mainScale = Instance.new("UIScale", keyFrame)
-mainScale.Scale = 0
-TweenService:Create(mainScale, animSpring, {Scale = 1}):Play()
+mainScale.Scale = 0.92
+keyFrame.BackgroundTransparency = 1
+TweenService:Create(mainScale, animSmooth, {Scale = 1}):Play()
+TweenService:Create(keyFrame, animSmooth, {BackgroundTransparency = 0}):Play()
 
 -- Topbar & Przeciąganie
 local topBar = Instance.new("Frame", keyFrame)
@@ -80,12 +157,6 @@ titleLabel.TextSize = 16
 titleLabel.TextColor3 = Theme.TextPrimary
 titleLabel.Text = "AURORA HUB — KEY SYSTEM"
 
-local titleGradient = Instance.new("UIGradient", titleLabel)
-titleGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Theme.Accent2),
-    ColorSequenceKeypoint.new(1, Theme.Accent1)
-}
-
 local topBarLine = Instance.new("Frame", topBar)
 topBarLine.Size = UDim2.new(1, 0, 0, 1)
 topBarLine.Position = UDim2.new(0, 0, 1, 0)
@@ -93,7 +164,7 @@ topBarLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 topBarLine.BackgroundTransparency = 0.9
 topBarLine.BorderSizePixel = 0
 
--- Przeciąganie okna
+-- Przeciąganie okna (z lekkim tiltem podczas ruchu)
 local dragging, dragStart, startPos
 topBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -101,7 +172,9 @@ topBar.InputBegan:Connect(function(input)
         dragStart = input.Position
         startPos = keyFrame.Position
         input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
         end)
     end
 end)
@@ -144,13 +217,24 @@ local inputStroke = Instance.new("UIStroke", keyInputBox)
 inputStroke.Color = Color3.fromRGB(255, 255, 255)
 inputStroke.Transparency = 0.9
 
--- Funkcja animacji przycisków
+-- Podświetlenie inputu przy focusie (animowane obramowanie)
+keyInputBox.Focused:Connect(function()
+    TweenService:Create(inputStroke, animFast, {Color = Theme.Accent2, Transparency = 0.2}):Play()
+    TweenService:Create(keyInputBox, animFast, {BackgroundColor3 = Color3.fromRGB(28, 28, 36)}):Play()
+end)
+keyInputBox.FocusLost:Connect(function()
+    TweenService:Create(inputStroke, animFast, {Color = Color3.fromRGB(255, 255, 255), Transparency = 0.9}):Play()
+    TweenService:Create(keyInputBox, animFast, {BackgroundColor3 = Theme.Panel}):Play()
+end)
+
+-- Funkcja animacji przycisków (ulepszona: sprężysty scale + ripple)
 local function createButtonAnim(btn)
     local scale = Instance.new("UIScale", btn)
-    btn.MouseEnter:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
+    btn.MouseEnter:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.03}):Play() end)
     btn.MouseLeave:Connect(function() TweenService:Create(scale, animFast, {Scale = 1}):Play() end)
     btn.MouseButton1Down:Connect(function() TweenService:Create(scale, animFast, {Scale = 0.95}):Play() end)
-    btn.MouseButton1Up:Connect(function() TweenService:Create(scale, animFast, {Scale = 1.02}):Play() end)
+    btn.MouseButton1Up:Connect(function() TweenService:Create(scale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.03}):Play() end)
+    rippleEffect(btn)
 end
 
 -- Przycisk Submit Key
@@ -205,6 +289,15 @@ statusLabel.TextColor3 = Theme.TextSecondary
 statusLabel.Text = "Join Discord to get the key"
 statusLabel.LayoutOrder = 4
 
+-- Pomocnik: animowana zmiana tekstu statusu (fade)
+local function setStatus(text, color)
+    TweenService:Create(statusLabel, animFast, {TextTransparency = 1}):Play()
+    task.wait(0.15)
+    statusLabel.Text = text
+    statusLabel.TextColor3 = color
+    TweenService:Create(statusLabel, animFast, {TextTransparency = 0}):Play()
+end
+
 -- ==========================================
 -- LOGIKA KEY SYSTEMU
 -- ==========================================
@@ -214,24 +307,23 @@ getKeyBtn.MouseButton1Click:Connect(function()
     elseif toclipboard then
         toclipboard(DISCORD_LINK)
     end
-    
-    statusLabel.TextColor3 = Theme.Accent2
-    statusLabel.Text = "Copied Discord link to clipboard!"
+
+    setStatus("Copied Discord link to clipboard!", Theme.Accent2)
     task.wait(2.5)
-    statusLabel.TextColor3 = Theme.TextSecondary
-    statusLabel.Text = "Join Discord to get the key"
+    setStatus("Join Discord to get the key", Theme.TextSecondary)
 end)
 
 local function loadMainScript()
-    -- Animacja zamknięcia Key Systemu
-    TweenService:Create(mainScale, animSpring, {Scale = 0}):Play()
-    task.wait(0.4)
+    -- Animacja zamknięcia Key Systemu (płynny zanik + scale)
+    TweenService:Create(mainScale, animSmooth, {Scale = 0.92}):Play()
+    TweenService:Create(keyFrame, animSmooth, {BackgroundTransparency = 1}):Play()
+    TweenService:Create(mainStroke, animSmooth, {Transparency = 1}):Play()
+    task.wait(0.35)
     keyGui:Destroy()
 
     -- ==========================================
     -- GŁÓWNY KOD SKRYPTU AUTOFARM
     -- ==========================================
-    local RunService = game:GetService("RunService")
     local racesFolder = workspace:WaitForChild("Races")
 
     local RACES = {
@@ -353,14 +445,31 @@ local function loadMainScript()
     local frameCorner2 = Instance.new("UICorner", mainFrame)
     frameCorner2.CornerRadius = UDim.new(0, 12)
 
-    local mainStroke2 = Instance.new("UIStroke", mainFrame)
-    mainStroke2.Color = Color3.fromRGB(255, 255, 255)
-    mainStroke2.Thickness = 1
-    mainStroke2.Transparency = 0.9
+    -- Animowany gradient tła głównego okna
+    local bgGradient2 = Instance.new("UIGradient", mainFrame)
+    bgGradient2.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 30)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(12, 12, 18))
+    }
+    bgGradient2.Rotation = 45
 
+    local mainStroke2 = Instance.new("UIStroke", mainFrame)
+    mainStroke2.Color = Color3.fromRGB(120, 120, 255)
+    mainStroke2.Thickness = 1.4
+    mainStroke2.Transparency = 0.6
+
+    local strokeGradient2 = Instance.new("UIGradient", mainStroke2)
+    strokeGradient2.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Theme.Accent2),
+        ColorSequenceKeypoint.new(1, Theme.Accent1)
+    }
+
+    -- Czyste wejście: płynny fade + scale (bez obrotu)
     local mainScale2 = Instance.new("UIScale", mainFrame)
-    mainScale2.Scale = 0
-    TweenService:Create(mainScale2, animSpring, {Scale = 1}):Play()
+    mainScale2.Scale = 0.92
+    mainFrame.BackgroundTransparency = 1
+    TweenService:Create(mainScale2, animSmooth, {Scale = 1}):Play()
+    TweenService:Create(mainFrame, animSmooth, {BackgroundTransparency = 0}):Play()
 
     local topBar2 = Instance.new("Frame", mainFrame)
     topBar2.Size = UDim2.new(1, 0, 0, 40)
@@ -376,12 +485,6 @@ local function loadMainScript()
     titleLabel2.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel2.Text = "AURORA AUTOFARM"
 
-    local titleGradient2 = Instance.new("UIGradient", titleLabel2)
-    titleGradient2.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Theme.Accent2),
-        ColorSequenceKeypoint.new(1, Theme.Accent1)
-    }
-
     local topBarLine2 = Instance.new("Frame", topBar2)
     topBarLine2.Size = UDim2.new(1, 0, 0, 1)
     topBarLine2.Position = UDim2.new(0, 0, 1, 0)
@@ -396,7 +499,9 @@ local function loadMainScript()
             dragStart2 = input.Position
             startPos2 = mainFrame.Position
             input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging2 = false end
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging2 = false
+                end
             end)
         end
     end)
@@ -468,6 +573,21 @@ local function loadMainScript()
     nextBtn.TextColor3 = Theme.Accent2
     nextBtn.TextSize = 18
 
+    -- Animacja hover strzałek (przesunięcie + scale)
+    local function arrowHover(btn, dir)
+        local s = Instance.new("UIScale", btn)
+        btn.MouseEnter:Connect(function()
+            TweenService:Create(s, animFast, {Scale = 1.4}):Play()
+            TweenService:Create(btn, animFast, {TextColor3 = Theme.TextPrimary}):Play()
+        end)
+        btn.MouseLeave:Connect(function()
+            TweenService:Create(s, animFast, {Scale = 1}):Play()
+            TweenService:Create(btn, animFast, {TextColor3 = Theme.Accent2}):Play()
+        end)
+    end
+    arrowHover(prevBtn, -1)
+    arrowHover(nextBtn, 1)
+
     local raceNameLabel = Instance.new("TextLabel", raceSelectorBox)
     raceNameLabel.Size = UDim2.new(1, -68, 1, 0)
     raceNameLabel.Position = UDim2.new(0, 34, 0, 0)
@@ -477,23 +597,32 @@ local function loadMainScript()
     raceNameLabel.TextSize = 13
     raceNameLabel.Text = RACES[config.selectedRaceIndex].name
 
-    local function updateRaceDisplay()
-        TweenService:Create(raceNameLabel, animFast, {TextTransparency = 1}):Play()
-        task.wait(0.1)
+    -- Animowana zmiana nazwy wyścigu (slide + fade w kierunku)
+    local function updateRaceDisplay(direction)
+        direction = direction or 1
+        TweenService:Create(raceNameLabel, animFast, {
+            TextTransparency = 1,
+            Position = UDim2.new(0, 34 + (18 * direction), 0, 0)
+        }):Play()
+        task.wait(0.12)
         raceNameLabel.Text = RACES[config.selectedRaceIndex].name
-        TweenService:Create(raceNameLabel, animFast, {TextTransparency = 0}):Play()
+        raceNameLabel.Position = UDim2.new(0, 34 - (18 * direction), 0, 0)
+        TweenService:Create(raceNameLabel, animSmooth, {
+            TextTransparency = 0,
+            Position = UDim2.new(0, 34, 0, 0)
+        }):Play()
     end
 
     prevBtn.MouseButton1Click:Connect(function()
         if config.isToggled then return end
         config.selectedRaceIndex = (config.selectedRaceIndex > 1) and (config.selectedRaceIndex - 1) or #RACES
-        updateRaceDisplay()
+        updateRaceDisplay(-1)
     end)
 
     nextBtn.MouseButton1Click:Connect(function()
         if config.isToggled then return end
         config.selectedRaceIndex = (config.selectedRaceIndex < #RACES) and (config.selectedRaceIndex + 1) or 1
-        updateRaceDisplay()
+        updateRaceDisplay(1)
     end)
 
     -- 2. SLIDERY
@@ -550,10 +679,23 @@ local function loadMainScript()
             ColorSequenceKeypoint.new(1, Theme.Accent1)
         }
 
+        -- Uchwyt (knob) suwaka z animowanym scale
+        local knob = Instance.new("Frame", sliderBg)
+        knob.Size = UDim2.new(0, 14, 0, 14)
+        knob.AnchorPoint = Vector2.new(0.5, 0.5)
+        knob.Position = UDim2.new((default - min) / (max - min), 0, 0.5, 0)
+        knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        knob.BorderSizePixel = 0
+        knob.ZIndex = 3
+        local knobCorner = Instance.new("UICorner", knob)
+        knobCorner.CornerRadius = UDim.new(1, 0)
+        local knobScale = Instance.new("UIScale", knob)
+
         local isDragging = false
         local function update(input)
             local pct = math.clamp((input.Position.X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X, 0, 1)
             TweenService:Create(fill, animFast, {Size = UDim2.new(pct, 0, 1, 0)}):Play()
+            TweenService:Create(knob, animFast, {Position = UDim2.new(pct, 0, 0.5, 0)}):Play()
             local val = math.floor(min + (max - min) * pct + 0.5)
             valueLbl.Text = formatFunc(val)
             return val
@@ -562,12 +704,16 @@ local function loadMainScript()
         sliderBg.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 isDragging = true
+                TweenService:Create(knobScale, animFast, {Scale = 1.4}):Play()
                 return update(input)
             end
         end)
 
         UserInputService.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                if isDragging then
+                    TweenService:Create(knobScale, animFast, {Scale = 1}):Play()
+                end
                 isDragging = false
             end
         end)
@@ -589,7 +735,7 @@ local function loadMainScript()
         end
     end)
 
-    -- 3. TOGGLE DELAY
+    -- 3. TOGGLE DELAY (z animowanym przełącznikiem)
     local delayBtn = Instance.new("TextButton", contentFrame)
     delayBtn.Size = UDim2.new(1, 0, 0, 36)
     delayBtn.BackgroundColor3 = Theme.Panel
@@ -597,15 +743,36 @@ local function loadMainScript()
     delayBtn.TextSize = 13
     delayBtn.TextColor3 = Theme.TextSecondary
     delayBtn.Text = "Loop Wait (15s): OFF"
+    delayBtn.TextXAlignment = Enum.TextXAlignment.Left
     delayBtn.AutoButtonColor = false
     delayBtn.LayoutOrder = 4
 
     local delayCorner = Instance.new("UICorner", delayBtn)
     delayCorner.CornerRadius = UDim.new(0, 8)
 
+    local delayPad = Instance.new("UIPadding", delayBtn)
+    delayPad.PaddingLeft = UDim.new(0, 12)
+
     local delayStroke = Instance.new("UIStroke", delayBtn)
     delayStroke.Color = Color3.fromRGB(255, 255, 255)
     delayStroke.Transparency = 0.9
+
+    -- Wizualny przełącznik (track + knob)
+    local toggleTrack = Instance.new("Frame", delayBtn)
+    toggleTrack.Size = UDim2.new(0, 38, 0, 18)
+    toggleTrack.AnchorPoint = Vector2.new(1, 0.5)
+    toggleTrack.Position = UDim2.new(1, -12, 0.5, 0)
+    toggleTrack.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    local ttCorner = Instance.new("UICorner", toggleTrack)
+    ttCorner.CornerRadius = UDim.new(1, 0)
+
+    local toggleKnob = Instance.new("Frame", toggleTrack)
+    toggleKnob.Size = UDim2.new(0, 14, 0, 14)
+    toggleKnob.AnchorPoint = Vector2.new(0, 0.5)
+    toggleKnob.Position = UDim2.new(0, 2, 0.5, 0)
+    toggleKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    local tkCorner = Instance.new("UICorner", toggleKnob)
+    tkCorner.CornerRadius = UDim.new(1, 0)
 
     createButtonAnim(delayBtn)
 
@@ -613,10 +780,14 @@ local function loadMainScript()
         config.isDelayEnabled = not config.isDelayEnabled
         if config.isDelayEnabled then
             delayBtn.Text = "Loop Wait (15s): ON"
-            TweenService:Create(delayBtn, animFast, {BackgroundColor3 = Color3.fromRGB(35, 120, 60), TextColor3 = Theme.TextPrimary}):Play()
+            TweenService:Create(delayBtn, animFast, {TextColor3 = Theme.TextPrimary}):Play()
+            TweenService:Create(toggleTrack, animFast, {BackgroundColor3 = Theme.Success}):Play()
+            TweenService:Create(toggleKnob, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -16, 0.5, 0)}):Play()
         else
             delayBtn.Text = "Loop Wait (15s): OFF"
-            TweenService:Create(delayBtn, animFast, {BackgroundColor3 = Theme.Panel, TextColor3 = Theme.TextSecondary}):Play()
+            TweenService:Create(delayBtn, animFast, {TextColor3 = Theme.TextSecondary}):Play()
+            TweenService:Create(toggleTrack, animFast, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}):Play()
+            TweenService:Create(toggleKnob, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0, 2, 0.5, 0)}):Play()
         end
     end)
 
@@ -667,6 +838,14 @@ local function loadMainScript()
     footer.TextColor3 = Theme.TextSecondary
     footer.Text = "MADE BY L8LY4U | AURORA HUB"
     footer.LayoutOrder = 6
+
+    -- Staggerowane wejście sekcji zawartości
+    animateEntrance(raceSection, 0.05)
+    animateEntrance(speedSlider.bg.Parent, 0.12)
+    animateEntrance(lapSlider.bg.Parent, 0.19)
+    animateEntrance(delayBtn, 0.26)
+    animateEntrance(startBtn, 0.33)
+    animateEntrance(footer, 0.40)
 
     -- LOGIKA JAZDY
     local function enableNoclip()
@@ -837,20 +1016,32 @@ end
 -- Weryfikacja wpisanego klucza
 submitBtn.MouseButton1Click:Connect(function()
     if keyInputBox.Text == CORRECT_KEY then
-        statusLabel.TextColor3 = Theme.Success
-        statusLabel.Text = "Correct Key! Loading..."
-        task.wait(1)
+        setStatus("Correct Key! Loading...", Theme.Success)
+        -- Animowany "puls" sukcesu na obramowaniu
+        TweenService:Create(mainStroke, animFast, {Color = Theme.Success, Transparency = 0.1}):Play()
+        TweenService:Create(mainScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1.05}):Play()
+        task.wait(0.25)
+        TweenService:Create(mainScale, animFast, {Scale = 1}):Play()
+        task.wait(0.75)
         loadMainScript()
     else
-        statusLabel.TextColor3 = Theme.Danger
-        statusLabel.Text = "Invalid Key! Try again."
-        
-        -- Animacja "szejka" (trzęsienie ramki przy błędzie)
+        setStatus("Invalid Key! Try again.", Theme.Danger)
+
+        -- Czerwony błysk obramowania
+        TweenService:Create(mainStroke, animFast, {Color = Theme.Danger, Transparency = 0.1}):Play()
+        task.delay(0.5, function()
+            TweenService:Create(mainStroke, animFast, {Color = Color3.fromRGB(120, 120, 255), Transparency = 0.6}):Play()
+        end)
+
+        -- Animacja "szejka" (płynne trzęsienie ramki przy błędzie)
         local originalPos = keyFrame.Position
-        for i = 1, 5 do
-            keyFrame.Position = originalPos + UDim2.new(0, (i % 2 == 0 and 5 or -5), 0, 0)
+        for i = 1, 8 do
+            local offset = (i % 2 == 0 and 8 or -8) * (1 - i / 10)
+            TweenService:Create(keyFrame, TweenInfo.new(0.04, Enum.EasingStyle.Quad), {
+                Position = originalPos + UDim2.new(0, offset, 0, 0)
+            }):Play()
             task.wait(0.04)
         end
-        keyFrame.Position = originalPos
+        TweenService:Create(keyFrame, animFast, {Position = originalPos}):Play()
     end
 end)
